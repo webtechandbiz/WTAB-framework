@@ -1,0 +1,11 @@
+<?php
+//# JS
+$this->headScript()->appendFile($this->basePath('public/js/FrameworkLogin/script.js'), 'text/javascript');
+
+//# CSS
+$this->headLink()->appendStylesheet($this->basePath('public/css/signin.css'));
+
+
+session_destroy();
+?>
+<a href="/wtab/login"/>Login</a>

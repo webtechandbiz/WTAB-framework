@@ -1,0 +1,61 @@
+<html lang="<?php echo $application_configs['language'];?>">
+    <head>
+        <meta charset="utf-8">
+        <link rel="shortcut icon" href="<?php echo $application_configs['APPLICATION_FAVICON_URL'];?>" type="image/x-icon" />
+        <?php 
+        $this->headLink()->appendStylesheet($this->basePath('public/libs/caricamento/caricamento.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/css/style.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/libs/font-awesome/css/font-awesome.min.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/css/dashboard.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/fonts/SourceSansPro.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/libs/bootstrap-4.3.1-dist/css/bootstrap.min.css'));
+
+        //# JS
+        $this->headScript()->appendFile($this->basePath('public/libs/jquery/jquery-3.3.1.min.js'));
+        $this->headScript()->appendFile($this->basePath('public/libs/bootstrap-4.3.1-dist/js/bootstrap.min.js'));
+        $this->headScript()->appendFile($this->basePath('public/js/commons/commons.js'));
+        $this->_getInitScript();
+        ?>
+    </head>
+    <body>
+        <?php
+        if($this->currentUser()){
+            $user = $this->currentUser();
+            $_username = $user->getEmail();
+        }else{
+            $_username = 'not-logged';
+        }
+        ?>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+            <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse" id="navbarsExampleDefault" style="">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="<?php echo $application_configs['APPLICATION_HOME']?>">Dashboard <span class="sr-only">(current)</span></a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav px-3" style="padding-right: 5px !important;">
+                    <li class="nav-item text-nowrap">
+                        <a class="nav-link" href="<?php echo $application_configs['APPLICATION_URL'].'logout';?>"><?php echo $_username?> Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div class="container-fluid">
+          <div class="row">
+            <main role="main" class="col-md-12 px-4">
+                <?php
+                if($_page_path !== '' && file_exists($_page_path)){
+                    include($_page_path);
+                }
+                ?>
+            </main>
+          </div>
+        </div>
+
+        <?= $this->inlineScript() ?>
+    </body>
+</html>

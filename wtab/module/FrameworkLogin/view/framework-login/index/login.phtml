@@ -1,0 +1,31 @@
+<html lang="<?php echo $application_configs['language'];?>">
+    <head>
+        <meta charset="utf-8">
+        <link rel="shortcut icon" href="<?php echo $application_configs['APPLICATION_FAVICON_URL'];?>" type="image/x-icon" />
+        <?php 
+        $this->headLink()->appendStylesheet($this->basePath('public/libs/caricamento/caricamento.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/css/style.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/libs/font-awesome/css/font-awesome.min.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/css/dashboard.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/fonts/SourceSansPro.css'));
+        $this->headLink()->appendStylesheet($this->basePath('public/libs/bootstrap-4.3.1-dist/css/bootstrap.min.css'));
+
+        //# JS
+        $this->headScript()->appendFile($this->basePath('public/libs/jquery/jquery-3.3.1.min.js'));
+        $this->headScript()->appendFile($this->basePath('public/libs/bootstrap-4.3.1-dist/js/bootstrap.min.js'));
+        $this->headScript()->appendFile($this->basePath('public/js/FrameworkLogin/script.js'), 'text/javascript');
+        $this->headScript()->appendFile($this->basePath('public/js/commons/commons.js'));
+        
+        //# CSS
+        $this->headLink()->appendStylesheet($this->basePath('public/css/signin.css'));
+        ?>
+        <script>
+            var APPLICATION_URL = '<?php echo $this->basePath();?>'
+            var APPLICATION_HOME = '<?php echo $application_configs['APPLICATION_HOME'];?>'
+        </script>
+    </head>
+    <body>
+        <?php include($_page_path); ?>
+        <?= $this->inlineScript() ?>
+    </body>
+</html>

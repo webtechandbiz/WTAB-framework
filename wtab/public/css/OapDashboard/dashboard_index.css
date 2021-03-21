@@ -1,0 +1,40 @@
+.btnSelezionaCliente{cursor: pointer;padding: 10px}
+.btnSelezionaCliente:hover{background-color: aliceblue}
+
+.btnNuovoProspect{background-color: #6c757d;color: #fff;/*margin-right: 10px;*/width:100%}
+.btnNuovoContattoConProspect{background-color: #6c757d;color: #fff;}
+
+.btn-black{background-color: #6c757d;color: #fff;}
+.selected{background-color: #6c757d;color: #fff;}
+
+.table thead th{border: none}
+
+#btnProspectAzienda{width: 100%}
+#btnProspectPersona{width: 100%}
+
+
+
+#btnNuovoProspectEmail{background-color: #6c757d;color: #fff;}
+#btnNuovoProspectLink{background-color: #6c757d;color: #fff;}
+#btnNuovoProspectPersone{background-color: #6c757d;color: #fff;}
+
+.table-sm td, .table-sm th {vertical-align: middle;}
+
+.btn{width: 100%}
+
+/*---*/
+.btnViewProjects{background-color: #6c757d;color: #fff;}
+
+button.fa.fa-clock-o {width: 50px;height: 50px;}
+
+.azienda_persona_ td:nth-child(4){text-align: right}
+
+.ticketstimesessions_modal_buttons{margin-top: 30px}
+#ticketstimesessions {height: 300px;overflow: auto;text-align: justify;}
+#ticketstimesessions hr {margin-top: 5px !important;margin-bottom: 5px !important;}
+span.difference {float: right;}
+
+/*.inizio{font-family: "courier new"}
+.fine{font-family: "courier new"}*/
+
+div#ticketstimesessions hr:nth-child(1) {display: none;}

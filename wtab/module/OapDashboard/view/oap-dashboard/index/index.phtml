@@ -1,0 +1,46 @@
+<?php 
+//$user = $_page->currentUser();
+
+//# JS
+$this->headScript()->appendFile($this->basePath('public/js/OapDashboard/dashboard_index.js?v='.$application_configs['ver']), 'text/javascript');
+
+//# CSS
+$this->headLink()->appendStylesheet($this->basePath('public/css/OapDashboard/dashboard_index.css'));
+
+
+global $_app_url;
+
+?>
+<script>
+    
+    var box_width = 150;
+    var box_height = 100;
+
+    var _user = '<?php // echo $page->escapeHtml($user->getEmail());?>';
+    var APPLICATION_URL = '<?php echo $this->basePath();?>'
+    var search = {};
+
+    $( document ).ready(function() {
+        'use strict';
+
+        $('#caricamento').hide();
+    });
+</script>
+
+<div id="caricamento"><i class="fa fa-spinner fa-spin"></i></div>
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+    <?php
+    echo 'data';
+
+    var_dump($this->ViewModel->get()['data']['test']);
+
+    ?>
+</div>
+
+
+<div id="message"></div>
+
+
+<!-- MODAL -->

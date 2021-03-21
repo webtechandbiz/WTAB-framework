@@ -1,0 +1,23 @@
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Login</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form id="loginForm">
+              <input type="hidden" name="t" value="<?php echo $this->getToken(); ?>" />
+              <div class="form-group input-group">
+                <input class="form-control" type="text" id="username" name="username" placeholder="username"/>
+              </div>
+              <div class="form-group input-group">
+                <input class="form-control" type="password" id="password" name="password" placeholder="password"/>     
+              </div>
+              <div class="form-group">
+                <button id="login" type="button" class="btn btn-block load">Login</button>
+              </div>
+            </form>
+        </div>
+    </div>
+</div>
