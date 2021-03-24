@@ -9,8 +9,6 @@ $application_configs['APPLICATION_DOMAIN_PROTOCOL'] = $application_configs['APPL
 $application_configs['ENABLE_HTTP'] = false;
 
 $application_configs['APPLICATION_ROOT'] = $application_configs['ROOT_PATH'];
-$application_configs['TBL_PREFIX'] = $application_configs['APPLICATION_SLUG'];
-$application_configs['TBL_FIELD_PREFIX'] = $application_configs['APPLICATION_SLUG'];
 
 $application_configs['LIB'] = 'libs/';
 $application_configs['FRAMEWORK_FOLDER'] = $application_configs['APPLICATION_ROOT'].'vendor/framework/';
