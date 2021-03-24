@@ -7,6 +7,9 @@ $application_configs['APPLICATION_SLUG'] = 'wtab';
 $application_configs['SESSION_PREFIX'] = '-Q4rp';
 $application_configs['APPLICATION_FAVICON_URL'] = '';
 
+$application_configs['TBL_PREFIX'] = $application_configs['APPLICATION_SLUG'];
+$application_configs['TBL_FIELD_PREFIX'] = $application_configs['APPLICATION_SLUG'];
+
 $application_configs['encryption_details'] = array(
     'secret_key' => '[CHANGE-SECRET-KEY]',
     'secret_iv' => '[CHANGE-SECRET-IV]'
