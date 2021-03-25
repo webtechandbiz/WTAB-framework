@@ -9,6 +9,7 @@ $application_configs['APPLICATION_FAVICON_URL'] = '';
 
 $application_configs['TBL_PREFIX'] = $application_configs['APPLICATION_SLUG'];
 $application_configs['TBL_FIELD_PREFIX'] = $application_configs['APPLICATION_SLUG'];
+$application_configs['APPLICATION_LOGS_FOLDER_PREFIX'] = '';
 
 $application_configs['encryption_details'] = array(
     'secret_key' => '[CHANGE-SECRET-KEY]',
