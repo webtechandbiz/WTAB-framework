@@ -57,7 +57,7 @@ $application_configs['localization'] = array(
 
 //# Logs
 $application_configs['WORDPRESS_URL__website'] = $application_configs['APPLICATION_ROOT'].'website.com/';
-$application_configs['APPLICATION_LOGS_FOLDER'] = $application_configs['APPLICATION_ROOT'].'logs/';
+$application_configs['APPLICATION_LOGS_FOLDER'] = $application_configs['APPLICATION_ROOT'].'logs-'.$application_configs['APPLICATION_LOGS_FOLDER_PREFIX'].'/';
 $application_configs['APPLICATION_LOGS_DB'] = $application_configs['APPLICATION_LOGS_FOLDER'].'db/';
 $application_configs['APPLICATION_LOGS_EXCEPTIONS'] = $application_configs['APPLICATION_LOGS_FOLDER'].'exceptions/';
 $application_configs['APPLICATION_LOGS_MESSAGES'] = $application_configs['APPLICATION_LOGS_FOLDER'].'messages/';
