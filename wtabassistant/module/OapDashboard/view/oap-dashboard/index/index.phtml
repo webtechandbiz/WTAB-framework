@@ -1,0 +1,62 @@
+<?php 
+//# JS
+$this->headScript()->appendFile($this->basePath('public/js/OapDashboard/dashboard_index.js?v='.$application_configs['ver']), 'text/javascript');
+
+//# CSS
+$this->headLink()->appendStylesheet($this->basePath('public/css/OapDashboard/dashboard_index.css'));
+
+global $_app_url;
+?>
+<script>
+    var _user = '<?php echo $_username?>';
+    var APPLICATION_URL = '<?php echo $this->basePath();?>'
+
+    $( document ).ready(function() {
+        'use strict';
+
+        $('#caricamento').hide();
+    });
+</script>
+
+<div class="pt-3 pb-2 mb-3 border-bottom">
+    <h1>Dashboard</h1>
+</div>
+
+<div class="container">
+    <h2>Read PHP logs</h2>
+    <h3>Error logs</h3>
+
+    <?php
+    $error_log_file_found = false;
+    $_get_error_log_files_from_website = $this->ViewModel->get()['_get_choosen_error_log_files'];
+    foreach ($_get_error_log_files_from_website as $file){
+        echo '<h4>'.$file.'</h4>';
+        echo '<p>'.file_get_contents($file).'</p>';
+        echo '--------------'.PHP_EOL;
+        $error_log_file_found = true;
+    }
+    if(!$error_log_file_found){
+        echo 'I can\'t find any error log file.';
+    }
+    ?>
+
+    <h3>Application logs</h3>
+    <?php
+    $error_log_file_found = false;
+    $_get_error_log_files_from_website = $this->ViewModel->get()['_get_choosen_error_log_files'];
+    foreach ($_get_error_log_files_from_website as $file){
+        echo '<h4>'.$file.'</h4>';
+        echo '<p>'.file_get_contents($file).'</p>';
+        echo '--------------'.PHP_EOL;
+        $error_log_file_found = true;
+    }
+    if(!$error_log_file_found){
+        echo 'I can\'t find any error log file.';
+    }
+    ?>
+</div>
+
+<div id="message"></div>
+
+
+<!-- MODAL -->
