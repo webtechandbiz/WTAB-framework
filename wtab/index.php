@@ -1,10 +1,18 @@
 <?php 
+$_htaccess = file_get_contents('.htaccess');
+$findme   = 'Require valid-user';
+$pos = strpos($_htaccess, $findme);
+if ($pos === false) {
+    die('Use Apache Authentication in htaccess to improve the project security');
+}
+
 session_start();
 $get = $_GET;
 $post = $_POST;
 
 global $application_configs;
 global $optional_parameters_values;
+global $talkwithwp;
 
 global $mail;
 $application_configs = array();
@@ -36,8 +44,11 @@ include($application_configs['FRAMEWORK_FOLDER'].'inputchecker/InputChecker.php'
 include($application_configs['FRAMEWORK_FOLDER'].'imageprocess/ImageProcess.php');
 include($application_configs['FRAMEWORK_FOLDER'].'convert/Convert.php');
 include($application_configs['FRAMEWORK_FOLDER'].'log_mng/Log.php');
+include($application_configs['FRAMEWORK_FOLDER'].'talkwithwp/talkWithWP.php');
 
 $application_configs['LOGMNG'] = new Log($application_configs);
+
+$talkwithwp = new talkWithWP();
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -50,6 +61,7 @@ if($application_configs['ENABLE_EMAIL_SERVICE']){
 
 $application_configs['db_mng'] = new DbMng($application_configs['db_details']);
 $navigation = new Navigation();
+$application_configs['_post'] = $post;
 
 if(isset($get['q'])){
     $parameters = explode('/', $get['q']);
@@ -100,8 +112,14 @@ if(isset($get['q'])){
                     $result = preg_replace('/\B([A-Z])/', '-$1', $modulename);
                     $_view_folder = strtolower($result);
 
-                    foreach ($_routes as $route => $values){
-                        if($route == $module){
+                    foreach ($_routes as $key => $values){
+                        $route_test = '';
+                        foreach ($parameters as $_){
+                            $route_test .= '/'.$_;
+                        }
+                        $route = $values['options']['route'];
+                        
+                        if($route == $route_test){
                             $__routes = explode('[/', $route);
                             $_parameters_count = sizeof($__routes);
 
@@ -124,14 +142,14 @@ if(isset($get['q'])){
                             }
 
                             $_controller = $values['options']['defaults']['controller'];
+
                             if(file_exists($application_configs['PRIVATE_FOLDER_MODULE'].$modulename.'/src/Controller/IndexController.php')){
                                 include($application_configs['PRIVATE_FOLDER_MODULE'].$modulename.'/src/Controller/IndexController.php');
-
                                 if(class_exists($_controller)){
                                     $page = $_page = new $_controller($application_configs);
                                     $_action = $values['options']['defaults']['action'];
                                     $__action = $_action.'Action';
-                                    if($action == $_action && $modulename !== 'FrameworkLogin'){
+                                    if($modulename !== 'FrameworkLogin'){
                                         $_page->_include($modulename, $_view_folder, $_action, $__action);
                                         $_page->$__action();
                                     }
@@ -142,14 +160,14 @@ if(isset($get['q'])){
                                 echo 'Not exists:'.$application_configs['PRIVATE_FOLDER_MODULE'].$modulename.'/src/Controller/IndexController.php<br>';
                             }
                         }else{
-    //                        echo $route.'|'.$module.'<br>';
+//                            echo '<br>'.$route.'|'.$module.'|'.$action.'<br>';
                         }
                     }
                 }
             }
         }
 
-    //    echo '$module:'.$module.'|$controller:'.$controller.'|$action:'.$action.'['.$class_name.']';
+//        die('$module:'.$module.'|$controller:'.$controller.'|$action:'.$action.'['.$class_name.']');
 
         if($module === 'login' && $controller === 'index'){
             if($action == 'index'){
