@@ -164,6 +164,56 @@ class IndexController extends \page{
         ));
     }
 
+
+    public function getGeneratedCodeByTableAction(){
+        $__db_mng = $this->_get_application_configs()['db_mng'];
+        $__getGeneratedCodeByTable = $this->_getGeneratedCodeByTable($__db_mng, 'oxzwzmci_wtab', $this->_get_application_configs()['_post']['tablename']);
+        var_dump($__getGeneratedCodeByTable);
+        
+//        var_dump($this->_get_application_configs()['_post']);
+        die();
+        $_content = file_get_contents($_path.$this->_get_application_configs()['_post']['filename']);
+        
+        $_row_count = 0;
+        $clmposition = 0;
+
+        $_html = 'Add autoincrement? <input id="addautoincrement" type="checkbox" value="1"/>';
+        
+        $_html .= '<table>';
+        $_ = explode(PHP_EOL, $_content);
+        header("Content-Type: application/json");
+        if($_ !== ''){
+            foreach ($_ as $row){
+                $clm = explode(',', $row);
+                $_html .= '<tr>';
+                if($_row_count === 0){
+                    foreach ($clm as $clm){
+                        $_html .= '<th data-clmposition="'.$clmposition.'">';
+                            $_html .= '<span data-clm="'.$clm.'" data-clmposition="'.$clmposition.'" class="slc">select<br><select class="clmtype"><option value="1">varchar</option><option value="2">int</option></select><br><input type="text"/></span><br>';
+                            $_html .= '<span data-clm="'.$clm.'" data-clmposition="'.$clmposition.'" class="key">key</span><br>';
+                            $_html .= '<br>';
+                        $_html .= ''.$clm.'</th>';
+                        $clmposition++;
+                    }
+                }else{
+                    foreach ($clm as $clm){
+                        $_html .= '<td>'.$clm.'</td>';
+                    }
+                }
+                $_html .= '</tr>';
+
+                $_row_count++;
+            }
+            $_html .= '</table>';
+            echo json_encode(array('content' => $_html));
+        }
+        die();
+        return new \JsonModel(array(
+            'content' => $_content
+        ));
+    }
+
+    
     private function _getRandomCode() {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
@@ -186,6 +236,82 @@ class IndexController extends \page{
             default:
                 break;
         }
+    }
+    private function _getGeneratedCodeByTable($__db_mng, $dbname, $tablename){
+        //# get PRIMARY KEY
+        $_select = 
+        'SELECT k.column_name
+        FROM information_schema.table_constraints t
+        JOIN information_schema.key_column_usage k
+        USING(constraint_name,table_schema,table_name)
+        WHERE t.constraint_type=\'PRIMARY KEY\'
+        AND t.table_schema=\''.$dbname.'\'
+        AND t.table_name=\''.$tablename.'\';';
+        $_ = $__db_mng->getDataByQuery($_select, 'db');
+        $_primary_key = $_['response_columns']['column_name'];
+        
+        //# get FOREIGN KEYS
+        $_select = 
+        'SELECT k.column_name
+        FROM information_schema.table_constraints t
+        JOIN information_schema.key_column_usage k
+        USING(constraint_name,table_schema,table_name)
+        WHERE t.constraint_type=\'FOREIGN KEY\'
+        AND t.table_schema=\''.$dbname.'\'
+        AND t.table_name=\''.$tablename.'\';';
+        $_ = $__db_mng->getDataByQuery($_select, 'db');
+        $_foreign_keys = $_['response'];
+        $_selectjoin = 'SELECT * FROM '.$tablename.' '.PHP_EOL;
+        foreach ($_foreign_keys as $_fk_table){
+            $_selectjoin .= 'LEFT JOIN '.strtolower($_fk_table['column_name']).' ON '.strtolower($_fk_table['column_name']).'.id_'.strtolower($_fk_table['column_name']).' = '.$tablename.'.'.$_fk_table['column_name'].' '.PHP_EOL;
+        }
+        
+        //# get JOINED DATA
+        $_select = $_selectjoin;
+        $_ = $__db_mng->getDataByQuery($_select, 'db');
+        $_datakeys = $_['response_columns'];
+        $_data = $_['response'];
+        foreach ($_datakeys as $key => $_clm){
+            $_columns[] = $key;
+        }
+        $_data_values = array();
+        
+        $i = 0;
+        foreach ($_data as $_value){
+            foreach ($_columns as $_clm){
+                $_data_values[$i][] = $_value[$_clm];
+            }
+            $i++;
+        }
+
+        //# Show data
+        $_html = '<table>';
+        
+        header("Content-Type: application/json");
+        if($_ !== ''){
+            $_html .= '<tr>';
+            foreach ($_columns as $column){
+                $_html .= '<th>'.$column.'</th>';
+            }
+            $_html .= '</tr>';
+            
+            foreach ($_data_values as $row){
+                $_html .= '<tr>';
+
+                foreach ($row as $clm){
+                    $_html .= '<td>'.$clm.'</td>';
+                }
+
+                $_html .= '</tr>';
+
+            }
+            $_html .= '</table>';
+            echo json_encode(array('content' => $_html));
+        }
+        die();
+        return new \JsonModel(array(
+            'content' => $_content
+        ));
     }
     private function _createTable($_content, $_selectedkey, $__db_mng){
         foreach ($_selectedkey as $_table_fieldname){
