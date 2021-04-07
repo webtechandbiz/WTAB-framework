@@ -264,6 +264,7 @@ class IndexController extends \page{
         $_selectjoin = 'SELECT * FROM '.$tablename.' '.PHP_EOL;
         foreach ($_foreign_keys as $_fk_table){
             $_selectjoin .= 'LEFT JOIN '.strtolower($_fk_table['column_name']).' ON '.strtolower($_fk_table['column_name']).'.id_'.strtolower($_fk_table['column_name']).' = '.$tablename.'.'.$_fk_table['column_name'].' '.PHP_EOL;
+            $_foreign_keys_ary[] = $_fk_table['column_name'];
         }
         
         //# get JOINED DATA
@@ -286,7 +287,6 @@ class IndexController extends \page{
 
         //# Show data
         $_html = '<table>';
-        
         header("Content-Type: application/json");
         if($_ !== ''){
             $_html .= '<tr>';
@@ -299,15 +299,43 @@ class IndexController extends \page{
                 $_html .= '<tr>';
 
                 foreach ($row as $clm){
-                    $_html .= '<td>'.$clm.'</td>';
+                    if(array_search($clm, $_foreign_keys_ary)){
+                        $_html .= '<td>'.$clm.'</td>';
+                    }else{
+                        $_html .= '<td>'.$clm.'</td>';
+                    }
                 }
 
                 $_html .= '</tr>';
 
             }
             $_html .= '</table>';
-            echo json_encode(array('content' => $_html));
+
+            $tabledata = $_html;
         }
+        
+        #GENERATE CODE
+        //# Show data
+        $_html = '<table>';
+        header("Content-Type: application/json");
+        if($_ !== ''){
+            $_html .= '<tr>';
+            foreach ($_columns as $column){
+                $_html .= '<th>'.$column.'</th>';
+            }
+            $_html .= '</tr>';
+            
+            $_html .= '<span id="span_'.$tablename.'"></span>';
+            
+            $_html .= '</table>';
+
+            $_data[] = array('tabledata_generated' => $_html);
+            
+            $tabledata_generated = $_html;
+        }
+        
+        echo json_encode(array('tabledata' => $tabledata, 'tabledata_generated' => $tabledata_generated));
+        
         die();
         return new \JsonModel(array(
             'content' => $_content
