@@ -1,0 +1,66 @@
+<?php 
+//# JS
+$this->headScript()->appendFile($this->basePath('public/js/OapDatamng/datamng_index.js?v='.$application_configs['ver']), 'text/javascript');
+$this->headScript()->appendFile($this->basePath('public/js/OapDatamng/datamng_upload.js?v='.$application_configs['ver']), 'text/javascript');
+        
+//# CSS
+$this->headLink()->appendStylesheet($this->basePath('public/css/OapDatamng/datamng_index.css'));
+
+global $_app_url;
+?>
+<script>
+    var _user = '<?php echo $_username?>';
+    var APPLICATION_URL = '<?php echo $this->basePath();?>'
+
+    $( document ).ready(function() {
+        'use strict';
+
+        $('#caricamento').hide();
+    });
+</script>
+
+<div class="pt-3 pb-2 mb-3 border-bottom">
+    <h1>Datamng</h1>
+</div>
+
+<div class="container">
+    <h2>Generic Upload</h2>
+    <h3>File upload</h3>
+
+    <input id="sortpicture" type="file" name="sortpic" />
+    <button id="uploadimportfile" class="btn btn-primary brown csbutton chiudi_popup_ch">Conferma</button>
+    
+    <br><br>
+    <h2>Uploaded files</h2>
+    <?php
+    $_APPLICATION_DATA_FOLDER = scandir($application_configs['APPLICATION_DATA_FOLDER'].'/datamng/uploaded');
+
+    foreach ($_APPLICATION_DATA_FOLDER as $file){
+        echo '<a class="openfile" href="'.$file.'">'.$file.'</a><br>';
+    }    
+    ?>
+
+    <br><br>
+    <h2>Table's Interfaces</h2>
+    <?php
+    //# TODO
+    ?>
+
+</div>
+
+<div id="message"></div>
+
+
+<!-- MODAL -->
+<div class="modal fade" id="view_filecontent" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <span id="_view_filecontent"></span>
+            </div>
+            <div class="modal-footer">
+                <button id="confirm_upload" type="button" class="btn btn-primary">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
