@@ -240,6 +240,7 @@ class IndexController extends \page{
                 break;
         }
     }
+
     private function _getGeneratedCodeByTable($__db_mng, $dbname, $tablename){
         //# get PRIMARY KEY
         $_select = 
@@ -268,6 +269,10 @@ class IndexController extends \page{
         foreach ($_foreign_keys as $_fk_table){
             $_selectjoin .= 'LEFT JOIN '.strtolower($_fk_table['column_name']).' ON '.strtolower($_fk_table['column_name']).'.id_'.strtolower($_fk_table['column_name']).' = '.$tablename.'.'.$_fk_table['column_name'].' '.PHP_EOL;
             $_foreign_keys_ary[] = $_fk_table['column_name'];
+            
+            $_foreign_tables[] = array(
+                'table' => strtolower($_fk_table['column_name']), 'field' => $_fk_table['column_name'],
+            );
         }
         
         //# get JOINED DATA
@@ -370,9 +375,26 @@ class IndexController extends \page{
         $_html_edit .= '</form>'.PHP_EOL;
         
         //# PHP Edit
-        $_php_edit = '$_post = $post[\'values\'];'.PHP_EOL;
-        $_php_edit = '$_where = $post[\'where\'];'.PHP_EOL;
-        $table = 'table';
+        $_php_edit = '$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
+
+        //# Save data into the foreign tables
+        foreach ($_foreign_tables as $table => $_){
+            $_php_edit .= '$_where_'.$_['field'].' = $post[\'where'.$_['field'].'\'];'.PHP_EOL;
+            $_php_edit .= '$save_'.$_['field'].'[] = array(\'field\' => \''.$_['field'].'\', \'typed_value\' => $_post[\''.$_['field'].'\']);'.PHP_EOL;
+
+            $_php_edit .= 'if(isset($_where_'.$_['field'].') && intval($_where_'.$_['field'].') > 0){'.PHP_EOL;
+            $_php_edit .= $php_tab.'$insert_update_'.$_['field'].' = 1;'.PHP_EOL;
+            $_php_edit .= '}else{'.PHP_EOL;
+                $_php_edit .= $php_tab.'$insert_update_'.$_['field'].' = 0;'.PHP_EOL;
+                $_php_edit .= $php_tab.'$save_'.$_['field'].'[] = array(\'where_field\' => \''.$_primary_key.'\', \'where_value\' => $_post[\''.$_primary_key.'\']);'.PHP_EOL;
+            $_php_edit .= '}'.PHP_EOL;
+            $_php_edit .= '$id_'.$_['field'].' = $___db_mng->saveDataOnTable(\''.$_['table'].'\', $save_'.$_['field'].', \'db\', $insert_update_'.$_['field'].');'.PHP_EOL;
+            $_php_edit .= PHP_EOL;
+        }
+        
+        //# Now save data into tablename
+        $_php_edit .= '$_where = $post[\'where\'];'.PHP_EOL;
+        $table = $tablename;
         foreach ($_columns as $clm){
             if(array_search($clm, $_foreign_keys_ary)){
                 $_php_edit .= '$save[] = array(\'field\' => \''.$clm.'\', \'typed_value\' => $_post[\''.$clm.'\']);'.PHP_EOL;
@@ -380,7 +402,6 @@ class IndexController extends \page{
                 $_php_edit .= '$save[] = array(\'field\' => \''.$clm.'\', \'typed_value\' => $_post[\''.$clm.'\']);'.PHP_EOL;
             }
         }
-        
         $_php_edit .= 'if(isset($_where) && intval($_where) > 0){'.PHP_EOL;
             $_php_edit .= $php_tab.'$insert_update = 1;'.PHP_EOL;
         $_php_edit .= '}else{'.PHP_EOL;
@@ -394,6 +415,7 @@ class IndexController extends \page{
             array(
                 'tabledata' => $tabledata, 
                 'selectjoin' => $_selectjoin,
+                'foreign_tables' => print_r($_foreign_tables, true),
                 
                 //# Get
                 'js_getdata' => $_jsgetdata,
