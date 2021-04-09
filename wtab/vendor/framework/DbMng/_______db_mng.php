@@ -280,7 +280,7 @@ class DbMng {
                 $field = $v['field'];
                 if(isset($v['typed_value'])){
                     //#- encryption Begin
-                    if($_encryption && isset($_encryption['object']) && is_array($_encryption['fields_to_encrypt'])){
+                    if(isset($_encryption) && $_encryption && isset($_encryption['object']) && is_array($_encryption['fields_to_encrypt'])){
                         $__encryption = $_encryption['object'];
                         if(in_array($field, $_encryption['fields_to_encrypt'])){
                             $execute_ary[$field] = $__encryption->encrypt($v['typed_value']);
