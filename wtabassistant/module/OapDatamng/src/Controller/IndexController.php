@@ -325,7 +325,7 @@ class IndexController extends \page{
         #GENERATE CODE
         $php_tab = "    ";
         $anchor = 'btn_'.$tablename;
-        $routing = array('module' => '_module', 'controller' => '_controller', 'action' => '_action');
+        $routing = array('module' => 'dashboard', 'controller' => 'index', 'action' => 'saveform');
         
         //# JS Edit
         $_jsgetdata = $this->_getJSview($anchor, $tablename, $routing, $_primary_key, $_columns);
@@ -374,7 +374,7 @@ class IndexController extends \page{
         $_html_edit .= '</form>'.PHP_EOL;
         
         //# PHP Edit
-        $_php_edit = 'public function saveformAction(){'.PHP_EOL;
+        $_php_edit = 'public function '.$routing['action'].'Action(){'.PHP_EOL;
         $_php_edit .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$post = $this->_get_application_configs()[\'_post\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
