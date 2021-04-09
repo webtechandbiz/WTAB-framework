@@ -74,6 +74,7 @@ class IndexController extends \page{
     }
     
     public function confirmuploadAction(){
+        $_tableconstraints = array();
         $__db_mng = $this->_get_application_configs()['db_mng'];
         $_currentFile = $this->_get_application_configs()['_post']['currentFile'];
         $_addautoincrement = $this->_get_application_configs()['_post']['addautoincrement'];
@@ -126,12 +127,13 @@ class IndexController extends \page{
                         foreach ($_clmposition as $_pos){
                             if(isset($_columns[$_pos]) && isset($clm[$_pos])){
                                 if(isset($_external_tables_values[strtolower($_columns[$_pos])])){
-
                                     foreach ($_external_tables_values[strtolower($_columns[$_pos])] as $_id => $_){
                                         if($_ == $clm[$_pos]){
                                             $_values[] = array('field' => $_columns[$_pos], 'typed_value' => $_id);
                                         }
                                     }
+
+                                    $_tableconstraints[$_columns[$_pos]] = 'ALTER TABLE `'.$_currentFile.'` ADD CONSTRAINT `'.$_columns[$_pos].'` FOREIGN KEY (`'.$_columns[$_pos].'`) REFERENCES `'.strtolower($_columns[$_pos]).'`(`id_'.strtolower($_columns[$_pos]).'`) ON DELETE RESTRICT ON UPDATE RESTRICT;';
                                 }else{
                                     $_values[] = array('field' => $_columns[$_pos], 'typed_value' => $clm[$_pos]);
                                 }
@@ -145,13 +147,16 @@ class IndexController extends \page{
                     }
                     $_row_count++;
                 }
+
+                foreach ($_tableconstraints as $key => $altertable){
+                    $__db_mng->getDataByQuery($altertable, 'db');
+                }
             }
 
 
         }else{ //#"Error creating table: " . $__db_mng->getDB()->error;
             var_dump($__db_mng->getDB()->error);
         }
-
 
         //# TODO - solve the JsonModel() bug
         header("Content-Type: application/json");
@@ -163,7 +168,6 @@ class IndexController extends \page{
 //            'content' => $_content
         ));
     }
-
 
     public function getGeneratedCodeByTableAction(){
         $__db_mng = $this->_get_application_configs()['db_mng'];
@@ -213,7 +217,6 @@ class IndexController extends \page{
         ));
     }
 
-    
     private function _getRandomCode() {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charactersLength = strlen($characters);
@@ -313,34 +316,150 @@ class IndexController extends \page{
 
             $tabledata = $_html;
         }
-        
+
+
         #GENERATE CODE
-        //# Show data
-        $_html = '<table>';
+        $php_tab = "    ";
+        $anchor = 'btn_'.$tablename;
+        $routing = array('module' => '_module', 'controller' => '_controller', 'action' => '_action');
+        
+        //# JS Edit
+        $_jsgetdata = $this->_getJSview($anchor, $tablename, $routing, $_primary_key, $_columns);
+
+        //# HTML view
+        $_html_getdata = '<table>';
         header("Content-Type: application/json");
         if($_ !== ''){
-            $_html .= '<tr>';
+            $_html_getdata .= '<tr>';
             foreach ($_columns as $column){
-                $_html .= '<th>'.$column.'</th>';
+                $_html_getdata .= '<th>'.$column.'</th>';
             }
-            $_html .= '</tr>';
+            $_html_getdata .= '</tr>';
             
-            $_html .= '<span id="span_'.$tablename.'"></span>';
+            $_html_getdata .= '<span id="span_'.$tablename.'"></span>';
             
-            $_html .= '</table>';
+            $_html_getdata .= '</table>';
 
-            $_data[] = array('tabledata_generated' => $_html);
-            
-            $tabledata_generated = $_html;
+            $_data[] = array('html_getdata' => $_html_getdata);
+        }
+
+        //# PHP get data
+        $_php_getdata = '$get = \''.$_selectjoin.'\';'.PHP_EOL;
+        $_php_getdata .= '$result = $___db_mng->getDataByQuery($get, \'db\')[\'response\'];'.PHP_EOL;
+        $_php_getdata .= 'global $_interface;'.PHP_EOL;
+
+        $_php_getdata .= 'if($result !== \'no-rows\' && isset($result[0])){'.PHP_EOL;
+            $_php_getdata .= $php_tab.'echo json_encode(array(\'data\' => $result));'.PHP_EOL;
+            $_php_getdata .= $php_tab.'$_interface->table($result, $_columns);'.PHP_EOL;
+        $_php_getdata .= '}'.PHP_EOL;
+        //#--
+
+        //# JS Edit
+        $_jsedit = $this->_getJSedit($anchor, $routing, $_primary_key, $_columns);
+
+        //# HTML Edit
+        $_html_edit = '<form>'.PHP_EOL;
+        foreach ($_columns as $clm){
+            if(array_search($clm, $_foreign_keys_ary)){
+                $_html_edit .= $php_tab.'<input type="text" value="$$'.$clm.'"/>'.PHP_EOL;
+            }else{
+                $_html_edit .= $php_tab.'<input type="text" value="'.$clm.'"/>'.PHP_EOL;
+            }
+        }
+        $_html_edit .= $php_tab.'<button id="btn_'.$tablename.'"></button>'.PHP_EOL;
+        $_html_edit .= '</form>'.PHP_EOL;
+        
+        //# PHP Edit
+        $_php_edit = '$_post = $post[\'values\'];'.PHP_EOL;
+        $_php_edit = '$_where = $post[\'where\'];'.PHP_EOL;
+        $table = 'table';
+        foreach ($_columns as $clm){
+            if(array_search($clm, $_foreign_keys_ary)){
+                $_php_edit .= '$save[] = array(\'field\' => \''.$clm.'\', \'typed_value\' => $_post[\''.$clm.'\']);'.PHP_EOL;
+            }else{
+                $_php_edit .= '$save[] = array(\'field\' => \''.$clm.'\', \'typed_value\' => $_post[\''.$clm.'\']);'.PHP_EOL;
+            }
         }
         
-        echo json_encode(array('tabledata' => $tabledata, 'tabledata_generated' => $tabledata_generated));
+        $_php_edit .= 'if(isset($_where) && intval($_where) > 0){'.PHP_EOL;
+            $_php_edit .= $php_tab.'$insert_update = 1;'.PHP_EOL;
+        $_php_edit .= '}else{'.PHP_EOL;
+            $_php_edit .= $php_tab.'$insert_update = 0;'.PHP_EOL;
+            $_php_edit .= $php_tab.'$save[] = array(\'where_field\' => \''.$_primary_key.'\', \'where_value\' => $_post[\''.$_primary_key.'\']);'.PHP_EOL;
+        $_php_edit .= '}'.PHP_EOL;
+        $_php_edit .= '$id = $___db_mng->saveDataOnTable(\''.$table.'\', $save, \'db\', $insert_update);'.PHP_EOL;
+        
+        
+        echo json_encode(
+            array(
+                'tabledata' => $tabledata, 
+                'selectjoin' => $_selectjoin,
+                
+                //# Get
+                'js_getdata' => $_jsgetdata,
+                'html_getdata' => $_html_getdata,
+                'php_getdata' => $_php_getdata,
+
+                //# Edit
+                'jsedit' => $_jsedit,
+                'htmledit' => $_html_edit,
+                'php_edit' => $_php_edit
+            )
+        );
         
         die();
         return new \JsonModel(array(
             'content' => $_content
         ));
     }
+    
+    private function _getJSview($anchor, $tablename, $routing, $_primary_key, $fields){
+        $php_tab = "    ";
+        $_ = '';
+        $_ .= '$(\'body\').on(\'click\', \'#'.$anchor.'\', function(e) {'.PHP_EOL;
+            $_ .= $php_tab.'console.log(\''.$anchor.'\');'.PHP_EOL;
+            $_ .= $php_tab.'var where = $(\'#'.$_primary_key.'\').val();'.PHP_EOL;
+
+            $_ .= $php_tab.'$.post( APPLICATION_URL + "'.$routing['module'].'/'.$routing['controller'].'/'.$routing['action'].'", { where: where })'.PHP_EOL;
+            $_ .= $php_tab.'.done(function(data) {'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
+            $_ .= $php_tab.'})'.PHP_EOL;
+            $_ .= $php_tab.'.fail(function(data) {'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log( "error" );'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log(\'span_'.$tablename.'\');'.PHP_EOL;
+                
+            $_ .= $php_tab.'});'.PHP_EOL;
+            $_ .= $php_tab.'return false;'.PHP_EOL;
+        $_ .= '});'.PHP_EOL;
+        return $_;
+    }
+    
+    private function _getJSedit($anchor, $routing, $_primary_key, $fields){
+        $php_tab = "    ";
+        $_ = '';
+        $_ .= '$(\'body\').on(\'click\', \'#'.$anchor.'\', function(e) {'.PHP_EOL;
+            $_ .= $php_tab.'console.log(\''.$anchor.'\');'.PHP_EOL;
+            $_ .= $php_tab.'var values = [];'.PHP_EOL;
+            $_ .= $php_tab.'var where = $(\'#'.$_primary_key.'\').val();'.PHP_EOL;
+            
+            foreach ($fields as $fieldname => $fieldvalue){
+                $_ .= $php_tab.'values[\''.$fieldvalue.'\'] = $(\'#'.$fieldvalue.'\').val();'.PHP_EOL;
+            }
+            $_ .= $php_tab.'$.post( APPLICATION_URL + "'.$routing['module'].'/'.$routing['controller'].'/'.$routing['action'].'", { values: values, where: where })'.PHP_EOL;
+            $_ .= $php_tab.'.done(function(data) {'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
+            $_ .= $php_tab.'})'.PHP_EOL;
+            $_ .= $php_tab.'.fail(function(data) {'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log( "error" );'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
+            $_ .= $php_tab.'});'.PHP_EOL;
+            $_ .= $php_tab.'return false;'.PHP_EOL;
+        $_ .= '});'.PHP_EOL;
+        return $_;
+    }
+    
+    
     private function _createTable($_content, $_selectedkey, $__db_mng){
         foreach ($_selectedkey as $_table_fieldname){
             $_table = strtolower($_table_fieldname['col']);
