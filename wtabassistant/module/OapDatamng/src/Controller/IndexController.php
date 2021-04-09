@@ -240,7 +240,6 @@ class IndexController extends \page{
                 break;
         }
     }
-
     private function _getGeneratedCodeByTable($__db_mng, $dbname, $tablename){
         //# get PRIMARY KEY
         $_select = 
@@ -366,50 +365,57 @@ class IndexController extends \page{
         $_html_edit = '<form>'.PHP_EOL;
         foreach ($_columns as $clm){
             if(array_search($clm, $_foreign_keys_ary)){
-                $_html_edit .= $php_tab.'<input type="text" value="$$'.$clm.'"/>'.PHP_EOL;
+                $_html_edit .= $php_tab.'<input type="text" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
             }else{
-                $_html_edit .= $php_tab.'<input type="text" value="'.$clm.'"/>'.PHP_EOL;
+                $_html_edit .= $php_tab.'<input type="text" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
             }
         }
         $_html_edit .= $php_tab.'<button id="btn_'.$tablename.'"></button>'.PHP_EOL;
         $_html_edit .= '</form>'.PHP_EOL;
         
         //# PHP Edit
-        $_php_edit = '$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
+        $_php_edit = 'public function saveformAction(){'.PHP_EOL;
+        $_php_edit .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
+        $_php_edit .= $php_tab.'$post = $this->_get_application_configs()[\'_post\'];'.PHP_EOL;
+        $_php_edit .= $php_tab.'$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
 
         //# Save data into the foreign tables
         foreach ($_foreign_tables as $table => $_){
-            $_php_edit .= '$_where_'.$_['field'].' = $post[\'where'.$_['field'].'\'];'.PHP_EOL;
-            $_php_edit .= '$save_'.$_['field'].'[] = array(\'field\' => \''.$_['field'].'\', \'typed_value\' => $_post[\''.$_['field'].'\']);'.PHP_EOL;
+            $_php_edit .= $php_tab.'$_where_'.$_['field'].' = $post[\'where'.$_['field'].'\'];'.PHP_EOL;
+            $_php_edit .= $php_tab.'$save_'.$_['field'].'[] = array(\'field\' => \''.$_['field'].'\', \'typed_value\' => $_post[\''.$_['field'].'\']);'.PHP_EOL;
 
-            $_php_edit .= 'if(isset($_where_'.$_['field'].') && intval($_where_'.$_['field'].') > 0){'.PHP_EOL;
-            $_php_edit .= $php_tab.'$insert_update_'.$_['field'].' = 1;'.PHP_EOL;
-            $_php_edit .= '}else{'.PHP_EOL;
-                $_php_edit .= $php_tab.'$insert_update_'.$_['field'].' = 0;'.PHP_EOL;
-                $_php_edit .= $php_tab.'$save_'.$_['field'].'[] = array(\'where_field\' => \''.$_primary_key.'\', \'where_value\' => $_post[\''.$_primary_key.'\']);'.PHP_EOL;
-            $_php_edit .= '}'.PHP_EOL;
-            $_php_edit .= '$id_'.$_['field'].' = $___db_mng->saveDataOnTable(\''.$_['table'].'\', $save_'.$_['field'].', \'db\', $insert_update_'.$_['field'].');'.PHP_EOL;
+            $_php_edit .= $php_tab.'if(isset($_where_'.$_['field'].') && intval($_where_'.$_['field'].') > 0){'.PHP_EOL;
+            $_php_edit .= $php_tab.$php_tab.'$insert_update_'.$_['field'].' = 1;'.PHP_EOL;
+            $_php_edit .= $php_tab.'}else{'.PHP_EOL;
+                $_php_edit .= $php_tab.$php_tab.'$insert_update_'.$_['field'].' = 0;'.PHP_EOL;
+                $_php_edit .= $php_tab.$php_tab.'$save_'.$_['field'].'[] = array(\'where_field\' => \''.$_primary_key.'\', \'where_value\' => $_post[\''.$_primary_key.'\']);'.PHP_EOL;
+            $_php_edit .= $php_tab.'}'.PHP_EOL;
+            $_php_edit .= $php_tab.'$id_'.$_['field'].' = $___db_mng->saveDataOnTable(\''.$_['table'].'\', $save_'.$_['field'].', \'db\', $insert_update_'.$_['field'].');'.PHP_EOL;
             $_php_edit .= PHP_EOL;
         }
         
         //# Now save data into tablename
-        $_php_edit .= '$_where = $post[\'where\'];'.PHP_EOL;
+        $_php_edit .= $php_tab.'$_where = $post[\'where\'];'.PHP_EOL;
         $table = $tablename;
         foreach ($_columns as $clm){
             if(array_search($clm, $_foreign_keys_ary)){
-                $_php_edit .= '$save[] = array(\'field\' => \''.$clm.'\', \'typed_value\' => $_post[\''.$clm.'\']);'.PHP_EOL;
+                $_php_edit .= $php_tab.'$save[] = array(\'field\' => \''.$clm.'\', \'typed_value\' => $_post[\''.$clm.'\']);'.PHP_EOL;
             }else{
-                $_php_edit .= '$save[] = array(\'field\' => \''.$clm.'\', \'typed_value\' => $_post[\''.$clm.'\']);'.PHP_EOL;
+                $_php_edit .= $php_tab.'$save[] = array(\'field\' => \''.$clm.'\', \'typed_value\' => $_post[\''.$clm.'\']);'.PHP_EOL;
             }
         }
-        $_php_edit .= 'if(isset($_where) && intval($_where) > 0){'.PHP_EOL;
-            $_php_edit .= $php_tab.'$insert_update = 1;'.PHP_EOL;
-        $_php_edit .= '}else{'.PHP_EOL;
-            $_php_edit .= $php_tab.'$insert_update = 0;'.PHP_EOL;
-            $_php_edit .= $php_tab.'$save[] = array(\'where_field\' => \''.$_primary_key.'\', \'where_value\' => $_post[\''.$_primary_key.'\']);'.PHP_EOL;
-        $_php_edit .= '}'.PHP_EOL;
-        $_php_edit .= '$id = $___db_mng->saveDataOnTable(\''.$table.'\', $save, \'db\', $insert_update);'.PHP_EOL;
+        $_php_edit .= $php_tab.'if(isset($_where) && intval($_where) > 0){'.PHP_EOL;
+            $_php_edit .= $php_tab.$php_tab.'$insert_update = 1;'.PHP_EOL;
+        $_php_edit .= $php_tab.'}else{'.PHP_EOL;
+            $_php_edit .= $php_tab.$php_tab.'$insert_update = 0;'.PHP_EOL;
+            $_php_edit .= $php_tab.$php_tab.'$save[] = array(\'where_field\' => \''.$_primary_key.'\', \'where_value\' => $_post[\''.$_primary_key.'\']);'.PHP_EOL;
+        $_php_edit .= $php_tab.'}'.PHP_EOL;
+        $_php_edit .= $php_tab.'$id = $___db_mng->saveDataOnTable(\''.$table.'\', $save, \'db\', $insert_update);'.PHP_EOL;
         
+        $_php_edit .= $php_tab.'echo json_encode(array(\'content\' => $_html));'.PHP_EOL;
+        $_php_edit .= $php_tab.'die();'.PHP_EOL;
+
+        $_php_edit .= '}'.PHP_EOL;
         
         echo json_encode(
             array(
@@ -462,10 +468,12 @@ class IndexController extends \page{
         $_ = '';
         $_ .= '$(\'body\').on(\'click\', \'#'.$anchor.'\', function(e) {'.PHP_EOL;
             $_ .= $php_tab.'console.log(\''.$anchor.'\');'.PHP_EOL;
-            $_ .= $php_tab.'var values = [];'.PHP_EOL;
+            $_ .= $php_tab.'var values = {};'.PHP_EOL;
+//            $_ .= $php_tab.'var where = {'.$_primary_key.': $(\'#'.$_primary_key.'\').val()};'.PHP_EOL;
             $_ .= $php_tab.'var where = $(\'#'.$_primary_key.'\').val();'.PHP_EOL;
             
             foreach ($fields as $fieldname => $fieldvalue){
+//                $_ .= 'values[\''.$fieldname.'\'] = [\''.$fieldvalue.'\'];'.PHP_EOL;
                 $_ .= $php_tab.'values[\''.$fieldvalue.'\'] = $(\'#'.$fieldvalue.'\').val();'.PHP_EOL;
             }
             $_ .= $php_tab.'$.post( APPLICATION_URL + "'.$routing['module'].'/'.$routing['controller'].'/'.$routing['action'].'", { values: values, where: where })'.PHP_EOL;
