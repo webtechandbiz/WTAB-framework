@@ -328,19 +328,19 @@ class IndexController extends \page{
         $php_tab = "    ";
         $anchor = 'btn_'.$tablename;
         $_action = 'get'.ucwords($tablename);
-        $routing_view = array('module' => 'dashboard', 'controller' => 'index', 'action' => $_action);
+        $routing_view = array('module' => $tablename, 'controller' => 'index', 'action' => $_action);
         
         //# Module config
         $_module_config_getdata = ''.
-            '\''.$tablename.'__'.$_action.'\' => ['.
-                '\'type\'    => Segment::class,'.
-                '\'options\' => ['.
-                    '\'route\'    => \'/'.$tablename.'/upload/'.$_action.'\','.
-                    '\'defaults\' => ['.
-                        '\'controller\' => Controller\IndexController::class,'.
-                        '\'action\'     => \''.$_action.'\','.
-                    '],'.
-                '],'.
+            '\''.$tablename.'__'.$_action.'\' => ['.PHP_EOL.
+                $php_tab.'\'type\'    => Segment::class,'.PHP_EOL.
+                $php_tab.'\'options\' => ['.PHP_EOL.
+                    $php_tab.$php_tab.'\'route\'    => \'/'.$tablename.'/index/'.$_action.'\','.PHP_EOL.
+                    $php_tab.$php_tab.'\'defaults\' => ['.PHP_EOL.
+                        $php_tab.$php_tab.$php_tab.'\'controller\' => Controller\IndexController::class,'.PHP_EOL.
+                        $php_tab.$php_tab.$php_tab.'\'action\'     => \''.$_action.'\','.PHP_EOL.
+                    $php_tab.$php_tab.'],'.PHP_EOL.
+                $php_tab.'],'.PHP_EOL.
             '],';
 
         //# JS View
@@ -374,7 +374,7 @@ class IndexController extends \page{
         $_php_getdata .= '}'.PHP_EOL;
         //#--
 
-        $routing_edit = array('module' => 'dashboard', 'controller' => 'index', 'action' => 'saveform');
+        $routing_edit = array('module' => $tablename, 'controller' => 'index', 'action' => 'saveform');
 
         //# JS Edit
         $_jsedit = $this->_getJSedit($anchor, $routing_edit, $_primary_key, $_columns);
