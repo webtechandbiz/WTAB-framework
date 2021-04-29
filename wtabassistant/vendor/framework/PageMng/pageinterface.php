@@ -5,6 +5,12 @@ class pageinterface {
 
     public function table($data, $columns){
         $_html = '<table>';
+        $_html .= '<tr>';
+        foreach ($columns as $clm){
+            $_html .= '<th>'.$clm.'</th>';
+        }
+        $_html .= '</tr>';
+
         foreach ($data as $row){
             $_html .= '<tr>';
             foreach ($columns as $clm){
