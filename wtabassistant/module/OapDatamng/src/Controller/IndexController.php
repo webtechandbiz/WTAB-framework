@@ -346,20 +346,13 @@ class IndexController extends \page{
         $_jsgetdata = $this->_getJSview($anchor, $tablename, $routing_view, $_primary_key, $_columns);
 
         //# HTML view
-        $_html_getdata = '<table>';
+        $_html_getdata = '';
         if($_ !== ''){
             $_columns_ary_str = '';
-            $_html_getdata .= '<tr>';
             foreach ($_columns as $column){
-                $_html_getdata .= '<th>'.$column.'</th>';
                 $_columns_ary_str .= $column.',';
             }
-            $_html_getdata .= '</tr>';
-            
             $_html_getdata .= '<span id="span_'.$tablename.'"></span>';
-            
-            $_html_getdata .= '</table>';
-
             $_data[] = array('html_getdata' => $_html_getdata);
         }
 
