@@ -296,7 +296,6 @@ class IndexController extends \page{
 
         //# Show data
         $_html = '<table>';
-        header("Content-Type: application/json");
         if($_ !== ''){
             $_html .= '<tr>';
             foreach ($_columns as $column){
@@ -348,7 +347,6 @@ class IndexController extends \page{
 
         //# HTML view
         $_html_getdata = '<table>';
-        header("Content-Type: application/json");
         if($_ !== ''){
             $_html_getdata .= '<tr>';
             foreach ($_columns as $column){
@@ -434,7 +432,8 @@ class IndexController extends \page{
         $_php_edit .= $php_tab.'die();'.PHP_EOL;
 
         $_php_edit .= '}'.PHP_EOL;
-        
+
+        header("Content-Type: application/json");
         echo json_encode(
             array(
                 'tabledata' => $tabledata, 
