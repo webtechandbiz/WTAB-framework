@@ -392,7 +392,7 @@ class IndexController extends \page{
         $_html_edit .= '</form>'.PHP_EOL;
         
         //# PHP Edit
-        $_php_edit = 'public function '.$routing['action'].'Action(){'.PHP_EOL;
+        $_php_edit = 'public function '.$routing_edit['action'].'Action(){'.PHP_EOL;
         $_php_edit .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$post = $this->_get_application_configs()[\'_post\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
