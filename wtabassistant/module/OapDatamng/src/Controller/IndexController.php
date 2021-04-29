@@ -348,9 +348,11 @@ class IndexController extends \page{
         //# HTML view
         $_html_getdata = '<table>';
         if($_ !== ''){
+            $_columns_ary_str = '';
             $_html_getdata .= '<tr>';
             foreach ($_columns as $column){
                 $_html_getdata .= '<th>'.$column.'</th>';
+                $_columns_ary_str .= $column.',';
             }
             $_html_getdata .= '</tr>';
             
@@ -364,11 +366,14 @@ class IndexController extends \page{
         //# PHP get data
         $_php_getdata = '$get = \''.$_selectjoin.'\';'.PHP_EOL;
         $_php_getdata .= '$result = $___db_mng->getDataByQuery($get, \'db\')[\'response\'];'.PHP_EOL;
-        $_php_getdata .= 'global $_interface;'.PHP_EOL;
+        $_php_getdata .= 'global $_pageinterface;'.PHP_EOL;
+        
+        $_php_getdata .= '$_columns = array(';
+            $_php_getdata .= '\''.$_columns_ary_str.'\'';
+        $_php_getdata .= ');';
 
         $_php_getdata .= 'if($result !== \'no-rows\' && isset($result[0])){'.PHP_EOL;
-            $_php_getdata .= $php_tab.'echo json_encode(array(\'data\' => $result));'.PHP_EOL;
-            $_php_getdata .= $php_tab.'$_interface->table($result, $_columns);'.PHP_EOL;
+            $_php_getdata .= $php_tab.'$table = $_interface->table($result, $_columns);'.PHP_EOL;
         $_php_getdata .= '}'.PHP_EOL;
         //#--
 
