@@ -3,7 +3,7 @@ class pageinterface {
 
     private $application_config = null;
 
-    public function table($data, $columns){
+    public function table($id, $data, $columns){
         $_html = '<table>';
         $_html .= '<tr>';
         foreach ($columns as $clm){
@@ -16,6 +16,7 @@ class pageinterface {
             foreach ($columns as $clm){
                 $_html .= '<td>'.$row[$clm].'</td>';
             }
+            $_html .= '<td><a target="_blank" href="edit/'.$id.'">[Edit]</a></td>';
             $_html .= '</tr>';
         }
         $_html .= '</table>';
