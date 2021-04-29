@@ -263,8 +263,7 @@ class IndexController extends \page{
         AND t.table_schema=\''.$dbname.'\'
         AND t.table_name=\''.$tablename.'\';';
         $_ = $__db_mng->getDataByQuery($_select, 'db');
-        $
-            gn_keys = $_['response'];
+        $_foreign_keys = $_['response'];
         $_selectjoin = 'SELECT * FROM '.$tablename.' '.PHP_EOL;
         foreach ($_foreign_keys as $_fk_table){
             $_column_name = strtolower($_fk_table['column_name']);
@@ -273,7 +272,7 @@ class IndexController extends \page{
             $_foreign_keys_ary[] = $_fk_table['column_name'];
             
             $_foreign_tables[] = array(
-                'table' => strtolower($_fk_table['column_name']), 'field' => $_fk_table['column_name'],
+                'table' => $_column_name, 'field' => $_fk_table['column_name'],
             );
         }
         
@@ -344,8 +343,8 @@ class IndexController extends \page{
                 '],'.
             '],';
 
-        //# JS Edit
-        $_jsgetdata = $this->_getJSview($anchor, $tablename, $routing, $_primary_key, $_columns);
+        //# JS View
+        $_jsgetdata = $this->_getJSview($anchor, $tablename, $routing_view, $_primary_key, $_columns);
 
         //# HTML view
         $_html_getdata = '<table>';
@@ -375,8 +374,10 @@ class IndexController extends \page{
         $_php_getdata .= '}'.PHP_EOL;
         //#--
 
+        $routing_edit = array('module' => 'dashboard', 'controller' => 'index', 'action' => 'saveform');
+
         //# JS Edit
-        $_jsedit = $this->_getJSedit($anchor, $routing, $_primary_key, $_columns);
+        $_jsedit = $this->_getJSedit($anchor, $routing_edit, $_primary_key, $_columns);
 
         //# HTML Edit
         $_html_edit = '<form>'.PHP_EOL;
