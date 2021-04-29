@@ -263,10 +263,13 @@ class IndexController extends \page{
         AND t.table_schema=\''.$dbname.'\'
         AND t.table_name=\''.$tablename.'\';';
         $_ = $__db_mng->getDataByQuery($_select, 'db');
-        $_foreign_keys = $_['response'];
+        $
+            gn_keys = $_['response'];
         $_selectjoin = 'SELECT * FROM '.$tablename.' '.PHP_EOL;
         foreach ($_foreign_keys as $_fk_table){
-            $_selectjoin .= 'LEFT JOIN '.strtolower($_fk_table['column_name']).' ON '.strtolower($_fk_table['column_name']).'.id_'.strtolower($_fk_table['column_name']).' = '.$tablename.'.'.$_fk_table['column_name'].' '.PHP_EOL;
+            $_column_name = strtolower($_fk_table['column_name']);
+            $_column_name = str_replace('_id', '', $_column_name);
+            $_selectjoin .= 'LEFT JOIN '.$_column_name.' ON '.$_column_name.'.id_'.$_column_name.' = '.$tablename.'.'.$_fk_table['column_name'].' '.PHP_EOL;
             $_foreign_keys_ary[] = $_fk_table['column_name'];
             
             $_foreign_tables[] = array(
