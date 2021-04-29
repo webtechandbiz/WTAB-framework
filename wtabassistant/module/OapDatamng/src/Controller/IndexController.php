@@ -328,8 +328,22 @@ class IndexController extends \page{
         #GENERATE CODE
         $php_tab = "    ";
         $anchor = 'btn_'.$tablename;
-        $routing = array('module' => 'dashboard', 'controller' => 'index', 'action' => 'saveform');
+        $_action = 'get'.ucwords($tablename);
+        $routing_view = array('module' => 'dashboard', 'controller' => 'index', 'action' => $_action);
         
+        //# Module config
+        $_module_config_getdata = ''.
+            '\''.$tablename.'__'.$_action.'\' => ['.
+                '\'type\'    => Segment::class,'.
+                '\'options\' => ['.
+                    '\'route\'    => \'/'.$tablename.'/upload/'.$_action.'\','.
+                    '\'defaults\' => ['.
+                        '\'controller\' => Controller\IndexController::class,'.
+                        '\'action\'     => \''.$_action.'\','.
+                    '],'.
+                '],'.
+            '],';
+
         //# JS Edit
         $_jsgetdata = $this->_getJSview($anchor, $tablename, $routing, $_primary_key, $_columns);
 
@@ -427,6 +441,7 @@ class IndexController extends \page{
                 'foreign_tables' => print_r($_foreign_tables, true),
                 
                 //# Get
+                'module_config_get_data' => $_module_config_getdata,
                 'js_getdata' => $_jsgetdata,
                 'html_getdata' => $_html_getdata,
                 'php_getdata' => $_php_getdata,
