@@ -171,8 +171,8 @@ class IndexController extends \page{
 
     public function getGeneratedCodeByTableAction(){
         $__db_mng = $this->_get_application_configs()['db_mng'];
-        $__getGeneratedCodeByTable = $this->_getGeneratedCodeByTable($__db_mng, 'oxzwzmci_wtab', $this->_get_application_configs()['_post']['tablename']);
-        var_dump($__getGeneratedCodeByTable);
+        $__getGeneratedCodeByTable = $this->_getGeneratedCodeByTable($__db_mng, 'oxzwzmci_wtabre', $this->_get_application_configs()['_post']['tablename']);
+//        var_dump($__getGeneratedCodeByTable);
         
 //        var_dump($this->_get_application_configs()['_post']);
         die();
@@ -350,23 +350,35 @@ class IndexController extends \page{
         if($_ !== ''){
             $_columns_ary_str = '';
             foreach ($_columns as $column){
-                $_columns_ary_str .= $column.',';
+                $_columns_ary_str .= $column.'\',\'';
             }
             $_html_getdata .= '<span id="span_'.$tablename.'"></span>';
             $_data[] = array('html_getdata' => $_html_getdata);
         }
 
         //# PHP get data
-        $_php_getdata = '$get = \''.$_selectjoin.'\';'.PHP_EOL;
-        $_php_getdata .= '$result = $___db_mng->getDataByQuery($get, \'db\')[\'response\'];'.PHP_EOL;
-        $_php_getdata .= 'global $_pageinterface;'.PHP_EOL;
+        $_php_getdata = 'public function '.$_action.'Action(){'.PHP_EOL;
         
-        $_php_getdata .= '$_columns = array(';
-            $_php_getdata .= '\''.$_columns_ary_str.'\'';
-        $_php_getdata .= ');';
+        $_php_getdata .= $php_tab.'global $_pageinterface;'.PHP_EOL;
+        $_php_getdata .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
+        $_php_getdata .= $php_tab.'$get = \''.$_selectjoin.'\';'.PHP_EOL;
+        $_php_getdata .= $php_tab.'$result = $___db_mng->getDataByQuery($get, \'db\')[\'response\'];'.PHP_EOL;
+        
+        $_php_getdata .= $php_tab.'$_columns = array('.PHP_EOL;
+            $_php_getdata .= $php_tab.'\''.$_columns_ary_str.'\''.PHP_EOL;
+        $_php_getdata .= $php_tab.');'.PHP_EOL;
 
-        $_php_getdata .= 'if($result !== \'no-rows\' && isset($result[0])){'.PHP_EOL;
-            $_php_getdata .= $php_tab.'$table = $_interface->table($result, $_columns);'.PHP_EOL;
+        $_php_getdata .= $php_tab.'if($result !== \'no-rows\' && isset($result[0])){'.PHP_EOL;
+            $_php_getdata .= $php_tab.$php_tab.'$table = $_pageinterface->table($result, $_columns);'.PHP_EOL;
+        $_php_getdata .= $php_tab.'}'.PHP_EOL;
+        $_php_getdata .= $php_tab.'header("Content-Type: application/json");'.PHP_EOL;
+        $_php_getdata .= $php_tab.'echo json_encode('.PHP_EOL;
+            $_php_getdata .= $php_tab.'array(';
+                $_php_getdata .= $php_tab.'\'table\' => $table';
+            $_php_getdata .= $php_tab.')';
+        $_php_getdata .= $php_tab.');'.PHP_EOL;
+        
+        $_php_getdata .= $php_tab.'die();'.PHP_EOL;
         $_php_getdata .= '}'.PHP_EOL;
         //#--
 
@@ -467,6 +479,7 @@ class IndexController extends \page{
             $_ .= $php_tab.'$.post( APPLICATION_URL + "'.$routing['module'].'/'.$routing['controller'].'/'.$routing['action'].'", { where: where })'.PHP_EOL;
             $_ .= $php_tab.'.done(function(data) {'.PHP_EOL;
                 $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'$(\'#span_'.$tablename.'\').replaceWith(data.table);'.PHP_EOL;
             $_ .= $php_tab.'})'.PHP_EOL;
             $_ .= $php_tab.'.fail(function(data) {'.PHP_EOL;
                 $_ .= $php_tab.$php_tab.'console.log( "error" );'.PHP_EOL;
