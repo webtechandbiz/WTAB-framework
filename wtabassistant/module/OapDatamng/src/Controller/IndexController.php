@@ -327,6 +327,7 @@ class IndexController extends \page{
         $php_tab = "    ";
         $anchor = 'btn_'.$tablename;
         $_action = 'get'.ucwords($tablename);
+        $_id = 'id_'.ucwords($tablename);
         $routing_view = array('module' => $tablename, 'controller' => 'index', 'action' => $_action);
         
         //# Module config
@@ -358,7 +359,6 @@ class IndexController extends \page{
 
         //# PHP get data
         $_php_getdata = 'public function '.$_action.'Action(){'.PHP_EOL;
-        
         $_php_getdata .= $php_tab.'global $_pageinterface;'.PHP_EOL;
         $_php_getdata .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
         $_php_getdata .= $php_tab.'$get = \''.$_selectjoin.'\';'.PHP_EOL;
@@ -369,7 +369,7 @@ class IndexController extends \page{
         $_php_getdata .= $php_tab.');'.PHP_EOL;
 
         $_php_getdata .= $php_tab.'if($result !== \'no-rows\' && isset($result[0])){'.PHP_EOL;
-            $_php_getdata .= $php_tab.$php_tab.'$table = $_pageinterface->table($result, $_columns);'.PHP_EOL;
+            $_php_getdata .= $php_tab.$php_tab.'$table = $_pageinterface->table(\''.$_id.'\', $result, $_columns);'.PHP_EOL;
         $_php_getdata .= $php_tab.'}'.PHP_EOL;
         $_php_getdata .= $php_tab.'header("Content-Type: application/json");'.PHP_EOL;
         $_php_getdata .= $php_tab.'echo json_encode('.PHP_EOL;
