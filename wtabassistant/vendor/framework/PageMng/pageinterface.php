@@ -13,6 +13,7 @@ class pageinterface {
             $_html .= '</tr>';
         }
         $_html .= '</table>';
+        return $_html;
     }
     public function __construct($application_config) {
         if(isset($application_config)){
