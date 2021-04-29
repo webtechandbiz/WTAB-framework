@@ -7,8 +7,19 @@ $( document ).ready(function() {
         .done(function(data) {
             console.log(data);
             $('#tablecontent').html(data.tabledata);
-            $('#tablecontent_generated__html').html(data.tabledata_generated);
-            
+
+            //# View
+            $('#tablecontent_generated__foreign_tables').html(data.foreign_tables);
+            $('#tablecontent_generated__moduleconfigview').html(data.module_config_get_data);
+            $('#tablecontent_generated__query').html(data.selectjoin);
+            $('#tablecontent_generated__html').html(data.html_getdata);
+            $('#tablecontent_generated__phpview').html(data.php_getdata);
+            $('#tablecontent_generated__jsview').html(data.js_getdata);
+
+            //# Edit
+            $('#tablecontent_generated__jsedit').html(data.jsedit);
+            $('#tablecontent_generated__htmledit').html(data.htmledit);
+            $('#tablecontent_generated__phpedit').html(data.php_edit);
         })
         .fail(function(data) {
             console.log( "error" );
