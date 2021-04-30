@@ -3,7 +3,7 @@ class pageinterface {
 
     private $application_config = null;
 
-    public function table($id, $data, $columns){
+    public function table($id, $data, $columns, $_module, $_controller, $_action){
         $_html = '<table>';
         $_html .= '<tr>';
         foreach ($columns as $clm){
@@ -14,9 +14,13 @@ class pageinterface {
         foreach ($data as $row){
             $_html .= '<tr>';
             foreach ($columns as $clm){
-                $_html .= '<td>'.$row[$clm].'</td>';
+                if(isset($row[$clm])){
+                    $_html .= '<td>'.$row[$clm].'</td>';
+                }else{
+                    $_html .= '<td>&nbsp;</td>';
+                }
             }
-            $_html .= '<td><a target="_blank" href="edit/'.$id.'">[Edit]</a></td>';
+            $_html .= '<td><a target="_blank" href="'.$_module.'/'.$_action.'/'.$row[$id].'">[Edit]</a></td>'; //# todo controller
             $_html .= '</tr>';
         }
         $_html .= '</table>';
