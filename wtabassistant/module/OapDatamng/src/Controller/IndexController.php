@@ -174,7 +174,7 @@ class IndexController extends \page{
         $__getGeneratedCodeByTable = $this->_getGeneratedCodeByTable($__db_mng, 'oxzwzmci_wtabre', $this->_get_application_configs()['_post']['tablename']);
 //        var_dump($__getGeneratedCodeByTable);
         
-//        var_dump($this->_get_application_configs()['_post']);
+//        var_dump($this->_get_application_configs()['_post']); //#TODO
         die();
         $_content = file_get_contents($_path.$this->_get_application_configs()['_post']['filename']);
         
@@ -326,19 +326,23 @@ class IndexController extends \page{
         #GENERATE CODE
         $php_tab = "    ";
         $anchor = 'btn_'.$tablename;
-        $_action = 'get'.ucwords($tablename);
-        $_id = 'id_'.ucwords($tablename);
-        $routing_view = array('module' => $tablename, 'controller' => 'index', 'action' => $_action);
+        $_action_get = 'get'.ucwords($tablename);
+        $_action_set = 'set'.ucwords($tablename);
+        $_action_edit = 'edit'.ucwords($tablename);
+        $_module = $tablename;
+        $_controller = 'index';
+        $_id = 'id_'.$tablename;
+        $routing_view = array('module' => $_module, 'controller' => $_controller, 'action' => $_action_get);
         
         //# Module config
         $_module_config_getdata = ''.
-            '\''.$tablename.'__'.$_action.'\' => ['.PHP_EOL.
+            '\''.$tablename.'__'.$_action_get.'\' => ['.PHP_EOL.
                 $php_tab.'\'type\'    => Segment::class,'.PHP_EOL.
                 $php_tab.'\'options\' => ['.PHP_EOL.
-                    $php_tab.$php_tab.'\'route\'    => \'/'.$tablename.'/index/'.$_action.'\','.PHP_EOL.
+                    $php_tab.$php_tab.'\'route\'    => \'/'.$tablename.'/index/'.$_action_get.'\','.PHP_EOL.
                     $php_tab.$php_tab.'\'defaults\' => ['.PHP_EOL.
                         $php_tab.$php_tab.$php_tab.'\'controller\' => Controller\IndexController::class,'.PHP_EOL.
-                        $php_tab.$php_tab.$php_tab.'\'action\'     => \''.$_action.'\','.PHP_EOL.
+                        $php_tab.$php_tab.$php_tab.'\'action\'     => \''.$_action_get.'\','.PHP_EOL.
                     $php_tab.$php_tab.'],'.PHP_EOL.
                 $php_tab.'],'.PHP_EOL.
             '],';
@@ -358,8 +362,12 @@ class IndexController extends \page{
         }
 
         //# PHP get data
-        $_php_getdata = 'public function '.$_action.'Action(){'.PHP_EOL;
+        $_php_getdata = 'public function '.$_action_get.'Action(){'.PHP_EOL;
         $_php_getdata .= $php_tab.'global $_pageinterface;'.PHP_EOL;
+        $_php_getdata .= $php_tab.'$_module = \'index\';'.PHP_EOL;
+        $_php_getdata .= $php_tab.'$_controller = \'index\';'.PHP_EOL;
+        $_php_getdata .= $php_tab.'$_action_edit = \''.$_action_edit.'\';'.PHP_EOL;
+        
         $_php_getdata .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
         $_php_getdata .= $php_tab.'$get = \''.$_selectjoin.'\';'.PHP_EOL;
         $_php_getdata .= $php_tab.'$result = $___db_mng->getDataByQuery($get, \'db\')[\'response\'];'.PHP_EOL;
@@ -369,7 +377,7 @@ class IndexController extends \page{
         $_php_getdata .= $php_tab.');'.PHP_EOL;
 
         $_php_getdata .= $php_tab.'if($result !== \'no-rows\' && isset($result[0])){'.PHP_EOL;
-            $_php_getdata .= $php_tab.$php_tab.'$table = $_pageinterface->table(\''.$_id.'\', $result, $_columns);'.PHP_EOL;
+            $_php_getdata .= $php_tab.$php_tab.'$table = $_pageinterface->table(\''.$_id.'\', $result, $_columns, $_module, $_controller, $_action_edit);'.PHP_EOL;
         $_php_getdata .= $php_tab.'}'.PHP_EOL;
         $_php_getdata .= $php_tab.'header("Content-Type: application/json");'.PHP_EOL;
         $_php_getdata .= $php_tab.'echo json_encode('.PHP_EOL;
@@ -382,7 +390,7 @@ class IndexController extends \page{
         $_php_getdata .= '}'.PHP_EOL;
         //#--
 
-        $routing_edit = array('module' => $tablename, 'controller' => 'index', 'action' => 'saveform');
+        $routing_edit = array('module' => $_module, 'controller' => $_controller, 'action' => $_action_set);
 
         //# JS Edit
         $_jsedit = $this->_getJSedit($anchor, $routing_edit, $_primary_key, $_columns);
@@ -396,11 +404,18 @@ class IndexController extends \page{
                 $_html_edit .= $php_tab.'<input type="text" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
             }
         }
-        $_html_edit .= $php_tab.'<button id="btn_'.$tablename.'"></button>'.PHP_EOL;
+        $_html_edit .= $php_tab.'<button id="btn_'.$tablename.'">Save</button>'.PHP_EOL;
         $_html_edit .= '</form>'.PHP_EOL;
         
         //# PHP Edit
-        $_php_edit = 'public function '.$routing_edit['action'].'Action(){'.PHP_EOL;
+        $_php_edit = 'public function '.$_action_edit.'Action() {'.PHP_EOL;
+            $php_tab.$_php_edit .= '$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
+            $php_tab.$_php_edit .= '$_data = array(\'test\' => $this->_get_application_configs()[\'APPLICATION_ROOT\']);'.PHP_EOL;
+            $php_tab.$_php_edit .= 'return new \ViewModel(array('.PHP_EOL;
+                $php_tab.$php_tab.$_php_edit .= '\'data\' => $_data,'.PHP_EOL;
+            $php_tab.$_php_edit .= '));'.PHP_EOL;
+        $_php_edit .= '}'.PHP_EOL;
+        $_php_edit .= 'public function '.$routing_edit['action'].'Action(){'.PHP_EOL;
         $_php_edit .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$post = $this->_get_application_configs()[\'_post\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
