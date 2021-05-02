@@ -4,26 +4,27 @@ class pageinterface {
     private $application_config = null;
 
     public function table($id, $data, $columns, $_module, $_controller, $_action){
-        $_html = '<table>';
-        $_html .= '<tr>';
-        foreach ($columns as $clm){
-            $_html .= '<th>'.$clm.'</th>';
+        $php_tab = '    ';
+        $_html = '<table>'.PHP_EOL;
+        $_html .= '<tr>'.PHP_EOL;
+        foreach ($columns as $field_name => $clm){
+            $_html .= '<th data-fn="'.$field_name.'">'.$clm.'</th>'.PHP_EOL;
         }
-        $_html .= '</tr>';
+        $_html .= '</tr>'.PHP_EOL;
 
         foreach ($data as $row){
-            $_html .= '<tr>';
-            foreach ($columns as $clm){
+            $_html .= '<tr>'.PHP_EOL;
+            foreach ($columns as $field_name => $clm){
                 if(isset($row[$clm])){
-                    $_html .= '<td>'.$row[$clm].'</td>';
+                    $_html .= '<td>'.$row[$clm].'</td>'.PHP_EOL;
                 }else{
-                    $_html .= '<td>&nbsp;</td>';
+                    $_html .= '<td>&nbsp;</td>'.PHP_EOL;
                 }
             }
-            $_html .= '<td><a target="_blank" href="'.$_module.'/'.$_action.'/'.$row[$id].'">[Edit]</a></td>'; //# todo controller
-            $_html .= '</tr>';
+            $_html .= '<td><div data-id="'.$row[$id].'" class="'.$_action.'">[Edit]</div></td>'.PHP_EOL; //# todo controller
+            $_html .= '</tr>'.PHP_EOL;
         }
-        $_html .= '</table>';
+        $_html .= '</table>'.PHP_EOL;
         return $_html;
     }
     public function __construct($application_config) {
@@ -37,6 +38,5 @@ class pageinterface {
         if(isset($this->application_config)){
             return $this->application_config;
         }
-    }
-    
+    }   
 }
