@@ -524,12 +524,13 @@ class IndexController extends \page{
 
         $_php_edit .= $php_tab.'if(isset($_where) && intval($_where) > 0){'.PHP_EOL;
             $_php_edit .= $php_tab.$php_tab.'$insert_update = 1;'.PHP_EOL;
-        $_php_edit .= $php_tab.'}else{'.PHP_EOL;
             $_php_edit .= $php_tab.$php_tab.'$save[] = array(\'where_field\' => \''.$_primary_key.'\', \'where_value\' => $_post[\''.$_primary_key.'\']);'.PHP_EOL;
+        $_php_edit .= $php_tab.'}else{'.PHP_EOL;
+            $_php_edit .= $php_tab.$php_tab.'$insert_update = 0;'.PHP_EOL;
         $_php_edit .= $php_tab.'}'.PHP_EOL;
         $_php_edit .= $php_tab.'$id = $___db_mng->saveDataOnTable(\''.$table.'\', $save, \'db\', $insert_update);'.PHP_EOL;
         
-        $_php_edit .= $php_tab.'echo json_encode(array(\'content\' => $_html));'.PHP_EOL;
+        $_php_edit .= $php_tab.'echo json_encode(array(\'content\' => $id));'.PHP_EOL;
         $_php_edit .= $php_tab.'die();'.PHP_EOL;
 
         $_php_edit .= '}'.PHP_EOL;
