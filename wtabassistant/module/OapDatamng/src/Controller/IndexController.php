@@ -272,6 +272,9 @@ class IndexController extends \page{
         $_select = $_selectjoin;
         $_ = $__db_mng->getDataByQuery($_select, 'db');
         $_datakeys = $_['response_columns'];
+        
+        $_datakeys_tablename_columns = $this->_getFieldListByTable($__db_mng, $dbname, $tablename);
+//        var_dump($_datakeys); die();
         $_data = $_['response'];
         foreach ($_datakeys as $key => $_clm){
             $_columns[] = $key;
@@ -415,10 +418,15 @@ class IndexController extends \page{
             $_html_edit .= '<div class="modal-dialog">'.PHP_EOL;
                 $_html_edit .= '<div class="modal-content">'.PHP_EOL;
                     $_html_edit .= '<div class="modal-body">'.PHP_EOL;
-                        $_html_edit .= '<form>'.PHP_EOL;
-                            foreach ($_columns as $clm){
+                        $_html_edit .= '<form id="frm_'.$tablename.'">'.PHP_EOL;
+                            foreach ($_datakeys_tablename_columns as $clm){
+                                $_html_edit .= '<div class="row">'.PHP_EOL;
+                                    $_html_edit .= $php_tab.'<div class="col-md-4">'.PHP_EOL;
+                                        $_html_edit .= $php_tab.$php_tab.$clm.PHP_EOL;
+                                    $_html_edit .= $php_tab.'</div>'.PHP_EOL;
+                                    $_html_edit .= $php_tab.'<div class="col-md-6">'.PHP_EOL;
                                 $_key = $this->_isKeyByColumn($__db_mng, $dbname, $clm);
-        
+                                $_edit_button_needed = false;
                                 if(array_search($clm, $_foreign_keys_ary) || $_key){
                                     if(strpos($clm, '_id') !== false){
                                         $_ext_table = str_replace('_id', '', $clm);
@@ -431,9 +439,11 @@ class IndexController extends \page{
                                                     $_html_edit .= $php_tab.$php_tab.'<option value="'.$row[$_id_clm].'">'.$row[$__clm].'</option>'.PHP_EOL;
                                                 }
                                             }
-                                        $_html_edit .= $php_tab.'</select><button>[edit]</button>'.PHP_EOL;
+                                        $_html_edit .= $php_tab.'</select>'.PHP_EOL;
+                                        $_edit_button_needed = true;
                                     } else{
-                                        $_html_edit .= $php_tab.'<input type="hidden" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
+                                        $_html_edit .= $php_tab.'<div id="dv_'.$clm.'"></div>'.PHP_EOL;
+                                        $_html_edit .= $php_tab.'<input FK1 type="hidden" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
                                     }
                                 }else{
                                     if(strpos($clm, '_id') !== false){
@@ -447,11 +457,21 @@ class IndexController extends \page{
                                                     $_html_edit .= $php_tab.$php_tab.'<option value="'.$row[$_id_clm].'">'.$row[$__clm].'</option>'.PHP_EOL;
                                                 }
                                             }
-                                        $_html_edit .= $php_tab.'</select><button>[edit]</button>'.PHP_EOL;
+                                        $_html_edit .= $php_tab.'</select>'.PHP_EOL;
+                                        $_edit_button_needed = true;
                                     } else{
-                                        $_html_edit .= $php_tab.'<input type="text" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
+                                        $_html_edit .= $php_tab.'<input FK2 type="text" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
                                     }
                                 }
+                                    $_html_edit .= $php_tab.'</div>'.PHP_EOL;
+                                    $_html_edit .= $php_tab.'<div class="col-md-2">'.PHP_EOL;
+                                    if($_edit_button_needed){
+                                        $_html_edit .= $php_tab.$php_tab.'<button>[edit]</button>'.PHP_EOL;
+                                    }else{
+                                        $_html_edit .= $php_tab.$php_tab.'&nbsp;'.PHP_EOL;
+                                    }
+                                    $_html_edit .= $php_tab.'</div>'.PHP_EOL;
+                                $_html_edit .= '</div>';
                             }
                         $_html_edit .= '</form>'.PHP_EOL;
                     $_html_edit .= '</div>'.PHP_EOL;
@@ -721,12 +741,16 @@ class IndexController extends \page{
             return false;
         }
     }
-    
+
     private function _getFieldListByTable($__db_mng, $db_name, $tablename){
+        $_fields = array();
         $_select = 'SHOW COLUMNS FROM '.$db_name.'.'.$tablename;
 
         $_ = $__db_mng->getDataByQuery($_select, 'db');
-        return $_['response'];
+        foreach ($_['response'] as $_response){
+            $_fields[] = $_response['Field'];
+        }
+        return $_fields;
     }
 
     private function _getRowsByTable($__db_mng, $db_name, $tablename){
