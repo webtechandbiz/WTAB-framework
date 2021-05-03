@@ -257,15 +257,17 @@ class IndexController extends \page{
         $_ = $__db_mng->getDataByQuery($_select, 'db');
         $_foreign_keys = $_['response'];
         $_selectjoin = 'SELECT * FROM '.$tablename.' '.PHP_EOL;
-        foreach ($_foreign_keys as $_fk_table){
-            $_column_name = strtolower($_fk_table['column_name']);
-            $_column_name = str_replace('_id', '', $_column_name);
-            $_selectjoin .= 'LEFT JOIN '.$_column_name.' ON '.$_column_name.'.id_'.$_column_name.' = '.$tablename.'.'.$_fk_table['column_name'].' '.PHP_EOL;
-            $tables[] = $_column_name;
-            $_foreign_keys_ary[] = $_fk_table['column_name'];
-            $_foreign_tables[] = array(
-                'table' => $_column_name, 'field' => $_fk_table['column_name'],
-            );
+        if(is_array($_foreign_keys)){
+            foreach ($_foreign_keys as $_fk_table){
+                $_column_name = strtolower($_fk_table['column_name']);
+                $_column_name = str_replace('_id', '', $_column_name);
+                $_selectjoin .= 'LEFT JOIN '.$_column_name.' ON '.$_column_name.'.id_'.$_column_name.' = '.$tablename.'.'.$_fk_table['column_name'].' '.PHP_EOL;
+                $tables[] = $_column_name;
+                $_foreign_keys_ary[] = $_fk_table['column_name'];
+                $_foreign_tables[] = array(
+                    'table' => $_column_name, 'field' => $_fk_table['column_name'],
+                );
+            }
         }
         
         //# get JOINED DATA
@@ -274,7 +276,6 @@ class IndexController extends \page{
         $_datakeys = $_['response_columns'];
         
         $_datakeys_tablename_columns = $this->_getFieldListByTable($__db_mng, $dbname, $tablename);
-//        var_dump($_datakeys); die();
         $_data = $_['response'];
         foreach ($_datakeys as $key => $_clm){
             $_columns[] = $key;
@@ -287,16 +288,18 @@ class IndexController extends \page{
 
         $_tables = array();
         $_pretable = '';
-        foreach ($_getFieldsByTable as $_field){
-            $_fields = array();
-            foreach ($_field as $field){
-                $_table = $field['TABLE_NAME'];
-                $_fields[] = array(
-                    'clm' => $field['COLUMN_NAME'], 'type' => $field['COLUMN_TYPE']
-                    , 'extra' => $field['EXTRA']);
-                $_tables[$field['TABLE_NAME']] = $_fields;
+        if(isset($_getFieldsByTable) && is_array($_getFieldsByTable)){
+            foreach ($_getFieldsByTable as $_field){
+                $_fields = array();
+                foreach ($_field as $field){
+                    $_table = $field['TABLE_NAME'];
+                    $_fields[] = array(
+                        'clm' => $field['COLUMN_NAME'], 'type' => $field['COLUMN_TYPE']
+                        , 'extra' => $field['EXTRA']);
+                    $_tables[$field['TABLE_NAME']] = $_fields;
 
-                $_pretable = $field['TABLE_NAME'];
+                    $_pretable = $field['TABLE_NAME'];
+                }
             }
         }
 
@@ -323,7 +326,7 @@ class IndexController extends \page{
                 $_html .= '<tr>';
 
                 foreach ($row as $clm){
-                    if(array_search($clm, $_foreign_keys_ary)){
+                    if(isset($_foreign_keys_ary) && is_array($_foreign_keys_ary) && array_search($clm, $_foreign_keys_ary)){
                         $_html .= '<td>'.$clm.'</td>';
                     }else{
                         $_html .= '<td>'.$clm.'</td>';
@@ -351,6 +354,10 @@ class IndexController extends \page{
         $_id = 'id_'.$tablename;
         $routing_view = array('module' => $_module, 'controller' => $_controller, 'action' => $_action_get);
         
+        $_application_config = '\''.$tablename.'/index/index\' => \'no-parameters\','.PHP_EOL;
+        $_application_config .= '\''.$tablename.'/'.$_action_get.'/'.$_action_get.'\' => \'no-parameters\','.PHP_EOL;
+        $_application_config .= '\''.$tablename.'/'.$_action_set.'/'.$_action_set.'\' => \'no-parameters\','.PHP_EOL;
+
         //# Module config
         $_module_config_getdata = ''.
             '\''.$tablename.'__'.$_action_get.'\' => ['.PHP_EOL.
@@ -409,6 +416,32 @@ class IndexController extends \page{
 
         $routing_edit = array('module' => $_module, 'controller' => $_controller, 'action' => $_action_set);
 
+        //# Module config
+        $_module_config_setdata = ''.
+            '\''.$tablename.'__'.$_action_set.'\' => ['.PHP_EOL.
+                $php_tab.'\'type\'    => Segment::class,'.PHP_EOL.
+                $php_tab.'\'options\' => ['.PHP_EOL.
+                    $php_tab.$php_tab.'\'route\'    => \'/'.$tablename.'/index/'.$_action_set.'\','.PHP_EOL.
+                    $php_tab.$php_tab.'\'defaults\' => ['.PHP_EOL.
+                        $php_tab.$php_tab.$php_tab.'\'controller\' => Controller\IndexController::class,'.PHP_EOL.
+                        $php_tab.$php_tab.$php_tab.'\'action\'     => \''.$_action_set.'\','.PHP_EOL.
+                    $php_tab.$php_tab.'],'.PHP_EOL.
+                $php_tab.'],'.PHP_EOL.
+            '],';
+
+        //# Module config
+        $_module_config_getdata = ''.
+            '\''.$tablename.'__'.$_action_get.'\' => ['.PHP_EOL.
+                $php_tab.'\'type\'    => Segment::class,'.PHP_EOL.
+                $php_tab.'\'options\' => ['.PHP_EOL.
+                    $php_tab.$php_tab.'\'route\'    => \'/'.$tablename.'/index/'.$_action_get.'\','.PHP_EOL.
+                    $php_tab.$php_tab.'\'defaults\' => ['.PHP_EOL.
+                        $php_tab.$php_tab.$php_tab.'\'controller\' => Controller\IndexController::class,'.PHP_EOL.
+                        $php_tab.$php_tab.$php_tab.'\'action\'     => \''.$_action_get.'\','.PHP_EOL.
+                    $php_tab.$php_tab.'],'.PHP_EOL.
+                $php_tab.'],'.PHP_EOL.
+            '],';
+
         //# JS Edit
         $_jsedit = $this->_getJSedit($tablename, $routing_edit, $_primary_key, $_columns);
 
@@ -425,51 +458,54 @@ class IndexController extends \page{
                                         $_html_edit .= $php_tab.$php_tab.$clm.PHP_EOL;
                                     $_html_edit .= $php_tab.'</div>'.PHP_EOL;
                                     $_html_edit .= $php_tab.'<div class="col-md-6">'.PHP_EOL;
-                                $_key = $this->_isKeyByColumn($__db_mng, $dbname, $clm);
-                                $_edit_button_needed = false;
-                                if(array_search($clm, $_foreign_keys_ary) || $_key){
-                                    if(strpos($clm, '_id') !== false){
-                                        $_ext_table = str_replace('_id', '', $clm);
-                                        $_html_edit .= $php_tab.'<select id="'.$clm.'">'.PHP_EOL;
-                                            $_getRowsByTable = $this->_getRowsByTable($__db_mng, $dbname, $_ext_table);
-                                            if(is_array($_getRowsByTable)){
-                                                foreach ($_getRowsByTable as $row){
-                                                    $_id_clm = 'id_'.$_ext_table;
-                                                    $__clm = $_ext_table;
-                                                    $_html_edit .= $php_tab.$php_tab.'<option value="'.$row[$_id_clm].'">'.$row[$__clm].'</option>'.PHP_EOL;
-                                                }
+                                        $_key = $this->_isKeyByColumn($__db_mng, $dbname, $clm);
+                                        $_edit_button_needed = false;
+                                        if(isset($_foreign_keys_ary) && is_array($_foreign_keys_ary) &&  array_search($clm, $_foreign_keys_ary) || $_key){
+                                            if(strpos($clm, '_id') !== false){
+                                                $_ext_table = str_replace('_id', '', $clm);
+                                                $_html_edit .= $php_tab.'<select id="'.$clm.'">'.PHP_EOL;
+                                                    $_getRowsByTable = $this->_getRowsByTable($__db_mng, $dbname, $_ext_table);
+                                                    if(is_array($_getRowsByTable)){
+                                                        foreach ($_getRowsByTable as $row){
+                                                            $_id_clm = 'id_'.$_ext_table;
+                                                            $__clm = $_ext_table;
+                                                            $_html_edit .= $php_tab.$php_tab.
+                                                                '<option value="'.$row[$_id_clm].'">'.$row[$__clm].'</option>'.PHP_EOL;
+                                                        }
+                                                    }
+                                                $_html_edit .= $php_tab.'</select>'.PHP_EOL;
+                                                $_edit_button_needed = true;
+                                            } else{
+                                                $_html_edit .= $php_tab.'<div id="dv_'.$clm.'"></div>'.PHP_EOL;
+                                                $_html_edit .= $php_tab.'<input FK1 type="hidden" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
                                             }
-                                        $_html_edit .= $php_tab.'</select>'.PHP_EOL;
-                                        $_edit_button_needed = true;
-                                    } else{
-                                        $_html_edit .= $php_tab.'<div id="dv_'.$clm.'"></div>'.PHP_EOL;
-                                        $_html_edit .= $php_tab.'<input FK1 type="hidden" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
-                                    }
-                                }else{
-                                    if(strpos($clm, '_id') !== false){
-                                        $_ext_table = str_replace('_id', '', $clm);
-                                        $_html_edit .= $php_tab.'<select id="'.$clm.'">'.PHP_EOL;
-                                            $_getRowsByTable = $this->_getRowsByTable($__db_mng, $dbname, $_ext_table);
-                                            if(is_array($_getRowsByTable)){
-                                                foreach ($_getRowsByTable as $row){
-                                                    $_id_clm = 'id_'.$_ext_table;
-                                                    $__clm = $_ext_table;
-                                                    $_html_edit .= $php_tab.$php_tab.'<option value="'.$row[$_id_clm].'">'.$row[$__clm].'</option>'.PHP_EOL;
-                                                }
+                                        }else{
+                                            if(strpos($clm, '_id') !== false){
+                                                $_ext_table = str_replace('_id', '', $clm);
+                                                $_html_edit .= $php_tab.'<select id="'.$clm.'">'.PHP_EOL;
+                                                    $_getRowsByTable = $this->_getRowsByTable($__db_mng, $dbname, $_ext_table);
+                                                    if(is_array($_getRowsByTable)){
+                                                        foreach ($_getRowsByTable as $row){
+                                                            $_id_clm = 'id_'.$_ext_table;
+                                                            $__clm = $_ext_table;
+                                                            $_html_edit .= $php_tab.$php_tab.
+                                                                '<option value="'.$row[$_id_clm].'">'.$row[$__clm].'</option>'.PHP_EOL;
+                                                        }
+                                                    }
+                                                $_html_edit .= $php_tab.'</select>'.PHP_EOL;
+                                                $_edit_button_needed = true;
+                                            } else{
+                                                $_html_edit .= $php_tab.'<input FK2 type="text" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
                                             }
-                                        $_html_edit .= $php_tab.'</select>'.PHP_EOL;
-                                        $_edit_button_needed = true;
-                                    } else{
-                                        $_html_edit .= $php_tab.'<input FK2 type="text" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
-                                    }
-                                }
+                                        }
                                     $_html_edit .= $php_tab.'</div>'.PHP_EOL;
                                     $_html_edit .= $php_tab.'<div class="col-md-2">'.PHP_EOL;
-                                    if($_edit_button_needed){
-                                        $_html_edit .= $php_tab.$php_tab.'<button>[edit]</button>'.PHP_EOL;
-                                    }else{
-                                        $_html_edit .= $php_tab.$php_tab.'&nbsp;'.PHP_EOL;
-                                    }
+                                        if($_edit_button_needed){
+                                            $_html_edit .= $php_tab.$php_tab.
+                                                '<button id="edit_'.$clm.'"  data-edit="'.$_ext_table.'" class="editslc">[edit]</button>'.PHP_EOL;
+                                        }else{
+                                            $_html_edit .= $php_tab.$php_tab.'&nbsp;'.PHP_EOL;
+                                        }
                                     $_html_edit .= $php_tab.'</div>'.PHP_EOL;
                                 $_html_edit .= '</div>';
                             }
@@ -483,19 +519,13 @@ class IndexController extends \page{
         $_html_edit .= '</div>'.PHP_EOL;
 
         //# PHP Edit
-        $_php_edit = 'public function '.$_action_edit.'Action() {'.PHP_EOL;
-            $php_tab.$_php_edit .= '$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
-            $php_tab.$_php_edit .= '$_data = array(\'test\' => $this->_get_application_configs()[\'APPLICATION_ROOT\']);'.PHP_EOL;
-            $php_tab.$_php_edit .= 'return new \ViewModel(array('.PHP_EOL;
-                $php_tab.$php_tab.$_php_edit .= '\'data\' => $_data,'.PHP_EOL;
-            $php_tab.$_php_edit .= '));'.PHP_EOL;
-        $_php_edit .= '}'.PHP_EOL;
+        $_php_edit = '';
         $_php_edit .= 'public function '.$routing_edit['action'].'Action(){'.PHP_EOL;
         $_php_edit .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$post = $this->_get_application_configs()[\'_post\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
 
-        $_php_edit .= '$_getFieldsByTable = '.var_export($_tables, true).';'.PHP_EOL;
+//        $_php_edit .= '$_getFieldsByTable = '.var_export($_tables, true).';'.PHP_EOL; //#TODO
         $_php_edit .= '$insert_update = 1;'.PHP_EOL;
 
         foreach ($_tables as $table => $fields){
@@ -509,7 +539,7 @@ class IndexController extends \page{
             $_php_edit .= $php_tab.'$save = null;'.PHP_EOL;
         }
 
-        $_php_edit .= 'die();'.PHP_EOL;
+//        $_php_edit .= 'die();'.PHP_EOL;
         
         //# Now save data into tablename
         $_php_edit .= $php_tab.'$_where = $post[\'where\'];'.PHP_EOL;
@@ -555,12 +585,13 @@ class IndexController extends \page{
 
         $_php_edit .= '}'.PHP_EOL;
 
+
         header("Content-Type: application/json");
         echo json_encode(
             array(
                 'tabledata' => $tabledata, 
                 'selectjoin' => $_selectjoin,
-                'foreign_tables' => print_r($_foreign_tables, true),
+                'application_config' => $_application_config,
                 
                 //# Get
                 'module_config_get_data' => $_module_config_getdata,
@@ -569,6 +600,7 @@ class IndexController extends \page{
                 'php_getdata' => $_php_getdata,
 
                 //# Edit
+                'module_config_set_data' => $_module_config_setdata,
                 'jsedit' => $_jsedit,
                 'htmledit' => $_html_edit,
                 'php_edit' => $_php_edit
@@ -584,6 +616,9 @@ class IndexController extends \page{
     private function _getJSview($_action_edit, $anchor_view, $tablename, $routing, $_primary_key, $fields){
         $php_tab = "    ";
         $_ = '';
+
+        $_ .= 'fnc__'.$_action_edit.'();'.PHP_EOL;
+
         $_ .= '$(\'body\').on(\'click\', \'.'.$_action_edit.'\', function(e) {'.PHP_EOL;
             $_ .= $php_tab.'console.log($(this).data(\'id\'));'.PHP_EOL;
             $_ .= $php_tab.'var _alltds = $(this).parent().parent().find(\'td\');'.PHP_EOL;
@@ -599,7 +634,8 @@ class IndexController extends \page{
             $_ .= $php_tab.'return false;'.PHP_EOL;
         $_ .= '});'.PHP_EOL;
 
-        $_ .= '$(\'body\').on(\'click\', \'#'.$anchor_view.'\', function(e) {'.PHP_EOL;
+
+        $_ .= 'function fnc__'.$_action_edit.'(){'.PHP_EOL;
             $_ .= $php_tab.'console.log(\''.$anchor_view.'\');'.PHP_EOL;
             $_ .= $php_tab.'var where = $(\'#'.$_primary_key.'\').val();'.PHP_EOL;
 
@@ -615,6 +651,11 @@ class IndexController extends \page{
                 
             $_ .= $php_tab.'});'.PHP_EOL;
             $_ .= $php_tab.'return false;'.PHP_EOL;
+        $_ .= '}'.PHP_EOL;
+
+        $_ .= '$(\'body\').on(\'click\', \'.editslc\', function(e) {'.PHP_EOL;
+            $_ .= $php_tab.'console.log($(this).data(\'edit\'));'.PHP_EOL;
+            $_ .= $php_tab.'window.open(APPLICATION_URL + $(this).data(\'edit\') + "/'.$routing['controller'].'", \'_blank\');'.PHP_EOL; //#TODO
         $_ .= '});'.PHP_EOL;
 
         return $_;
