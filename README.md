@@ -17,3 +17,6 @@ I suggest to copy/paste the "OapDashboard" folder in /module. Change the directo
 
 # Code generator
 The Code generator is still in super-alpha version, but there are the basics to create a "View" table based on a mysql table (automatically create the LEFT JOIN statement for the connected tables) and the Insert/Edit forms used for change the row data and the data into the external table. Formal checks must be implemented before use it even in a dev environment, but this work is very useful in my day work, because I can have a great part of code, written almost automatically and in fast way. A basics I use to do my job.
+1) Duplicate any module;
+2) Rename the module folder, find/replace the name and rename the view/[folder];
+3) Use the Code Generator passing the table's name and copy the generated code;
