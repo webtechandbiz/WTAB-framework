@@ -41,3 +41,14 @@ $application_configs['WP__website'] = array(
     'qsPV6EwtzA' => '',
     'AQowahicz5' => ''
 );
+
+//# WHITELIST
+$application_configs['parameters_whitelist'] = array(
+    'errors_mng/errors_mng/log' => 'no-parameters',
+    'dashboard/index/index' => 'no-parameters',
+
+    'login/login/index' => 'no-parameters',
+    'login/login/checklogin' => array(
+        'username', 'password'
+    )
+);
