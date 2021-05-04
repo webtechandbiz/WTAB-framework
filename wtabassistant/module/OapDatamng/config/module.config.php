@@ -48,6 +48,16 @@ return [
                     ],
                 ],
             ],
+            'datamng__getGeneratedCodeByTable' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/datamng/upload/getGeneratedCodeByTable',
+                    'defaults' => [
+                        'controller' => Controller\IndexController::class,
+                        'action'     => 'getGeneratedCodeByTable',
+                    ],
+                ],
+            ],
             'datamng__confirmupload' => [
                 'type'    => Segment::class,
                 'options' => [
