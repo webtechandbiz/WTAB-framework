@@ -38,5 +38,5 @@ class pageinterface {
         if(isset($this->application_config)){
             return $this->application_config;
         }
-    }   
+    }
 }
