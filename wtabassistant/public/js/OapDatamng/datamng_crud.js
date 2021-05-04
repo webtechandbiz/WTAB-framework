@@ -8,6 +8,7 @@ $( document ).ready(function() {
             console.log(data);
             $('#tablecontent').html(data.tabledata);
 
+            $('#tablecontent_generated__application_config').html(data.application_config);
             //# View
             $('#tablecontent_generated__foreign_tables').html(data.foreign_tables);
             $('#tablecontent_generated__moduleconfigview').html(data.module_config_get_data);
@@ -18,6 +19,7 @@ $( document ).ready(function() {
 
             //# Edit
             $('#tablecontent_generated__jsedit').html(data.jsedit);
+            $('#tablecontent_generated__moduleconfigedit').html(data.module_config_set_data);
             $('#tablecontent_generated__htmledit').html(data.htmledit);
             $('#tablecontent_generated__phpedit').html(data.php_edit);
         })
