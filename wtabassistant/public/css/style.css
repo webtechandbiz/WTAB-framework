@@ -1,0 +1,37 @@
+.btn{height: 60px;}
+.btn-confirm{color: #fff;background-color: #6c757d;border-color: #6c757d;}
+.upload_code{margin-right: 3px}
+.file-btn span {color: #fff;line-height: 40px;}
+
+.card-body .text-muted{text-align: right;max-width: 100px;}
+
+button#login {
+    background-color: lightgrey;
+}
+
+.container p{font-family: courier;font-size: 14px}
+
+form div{
+    line-height: 30px;
+}
+select {
+    line-height: 30px;
+    height: 30px;
+    margin-top: 5px;
+    padding: 5px;
+    width: 100%
+}
+input{
+    line-height: 30px;
+    height: 30px;
+    margin-top: 5px;
+    width: 100%;
+    padding: 5px;
+}
+button{
+    border: none;
+    font-size: 9px;
+    line-height: 30px;
+    margin-top: 5px;
+    width: 100%
+}
