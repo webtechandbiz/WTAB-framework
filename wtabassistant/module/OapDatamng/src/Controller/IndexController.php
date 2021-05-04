@@ -171,10 +171,8 @@ class IndexController extends \page{
 
     public function getGeneratedCodeByTableAction(){
         $__db_mng = $this->_get_application_configs()['db_mng'];
-        $__getGeneratedCodeByTable = $this->_getGeneratedCodeByTable($__db_mng, 'oxzwzmci_wtabre', $this->_get_application_configs()['_post']['tablename']);
-//        var_dump($__getGeneratedCodeByTable);
-        
-//        var_dump($this->_get_application_configs()['_post']); //#TODO
+        $__getGeneratedCodeByTable = $this->_getGeneratedCodeByTable($__db_mng, $this->_get_application_configs()['db_details']['VxMO8N5kX4'], $this->_get_application_configs()['_post']['tablename']);
+        //#TODO
         die();
         $_content = file_get_contents($_path.$this->_get_application_configs()['_post']['filename']);
         
