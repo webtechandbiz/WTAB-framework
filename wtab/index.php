@@ -13,6 +13,7 @@ $post = $_POST;
 global $application_configs;
 global $optional_parameters_values;
 global $talkwithwp;
+global $_pageinterface;
 
 global $mail;
 $application_configs = array();
@@ -28,6 +29,7 @@ include($application_configs['FRAMEWORK_FOLDER'].'navigation/Navigation.php');
 include($application_configs['FRAMEWORK_FOLDER'].'PageMng/page.php');
 include($application_configs['FRAMEWORK_FOLDER'].'PageMng/ViewModel.php');
 include($application_configs['FRAMEWORK_FOLDER'].'PageMng/JsonModel.php');
+include($application_configs['FRAMEWORK_FOLDER'].'PageMng/pageinterface.php');
 include($application_configs['FRAMEWORK_FOLDER'].'user/currentuser.php');
 include($application_configs['FRAMEWORK_FOLDER'].'user/params.php');
 include($application_configs['FRAMEWORK_FOLDER'].'user/headscript.php');
@@ -49,6 +51,7 @@ include($application_configs['FRAMEWORK_FOLDER'].'talkwithwp/talkWithWP.php');
 $application_configs['LOGMNG'] = new Log($application_configs);
 
 $talkwithwp = new talkWithWP();
+$_pageinterface = new pageinterface($application_configs);
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -138,7 +141,6 @@ if(isset($get['q'])){
                                     $optional_parameters_values[$_param] = $optional_parameters[$_i_optional_param];
                                     $_i_optional_param++;
                                 }
-
                             }
 
                             $_controller = $values['options']['defaults']['controller'];
@@ -159,8 +161,6 @@ if(isset($get['q'])){
                             }else{
                                 echo 'Not exists:'.$application_configs['PRIVATE_FOLDER_MODULE'].$modulename.'/src/Controller/IndexController.php<br>';
                             }
-                        }else{
-//                            echo '<br>'.$route.'|'.$module.'|'.$action.'<br>';
                         }
                     }
                 }
