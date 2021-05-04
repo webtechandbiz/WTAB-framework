@@ -63,6 +63,9 @@ $application_configs['APPLICATION_LOGS_EXCEPTIONS'] = $application_configs['APPL
 $application_configs['APPLICATION_LOGS_MESSAGES'] = $application_configs['APPLICATION_LOGS_FOLDER'].'messages/';
 $application_configs['APPLICATION_LOGS_OTHER'] = $application_configs['APPLICATION_LOGS_FOLDER'].'other/';
 
+//# Data
+$application_configs['APPLICATION_DATA_FOLDER'] = $application_configs['APPLICATION_ROOT'].'data/';
+
 //#TODO
 $application_configs['OPEN_MODULES'] = array(
     'public', 'login', 'logout'
