@@ -1,40 +1,97 @@
-.btnSelezionaCliente{cursor: pointer;padding: 10px}
-.btnSelezionaCliente:hover{background-color: aliceblue}
+.feather {
+  width: 16px;
+  height: 16px;
+  vertical-align: text-bottom;
+}
 
-.btnNuovoProspect{background-color: #6c757d;color: #fff;/*margin-right: 10px;*/width:100%}
-.btnNuovoContattoConProspect{background-color: #6c757d;color: #fff;}
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  padding: 48px 0 0;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
 
-.btn-black{background-color: #6c757d;color: #fff;}
-.selected{background-color: #6c757d;color: #fff;}
+.sidebar-sticky {
+  position: relative;
+  top: 0;
+  height: calc(100vh - 48px);
+  padding-top: .5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
 
-.table thead th{border: none}
+@supports ((position: -webkit-sticky) or (position: sticky)) {
+  .sidebar-sticky {
+    position: -webkit-sticky;
+    position: sticky;
+  }
+}
 
-#btnProspectAzienda{width: 100%}
-#btnProspectPersona{width: 100%}
+.sidebar .nav-link {
+  font-weight: 500;
+  color: #333;
+}
+
+.sidebar .nav-link .feather {
+  margin-right: 4px;
+  color: #999;
+}
+
+.sidebar .nav-link.active {
+  color: #007bff;
+}
+
+.sidebar .nav-link:hover .feather,
+.sidebar .nav-link.active .feather {
+  color: inherit;
+}
+
+.sidebar-heading {
+  font-size: .75rem;
+  text-transform: uppercase;
+}
+
+[role="main"] {
+  padding-top: 133px; /* Space for fixed navbar */
+}
+
+@media (min-width: 768px) {
+  [role="main"] {
+    padding-top: 48px; /* Space for fixed navbar */
+  }
+}
+
+.navbar-brand {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  font-size: 1rem;
+  background-color: rgba(0, 0, 0, .25);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+}
+
+.navbar .form-control {
+  padding: .75rem 1rem;
+  border-width: 0;
+  border-radius: 0;
+}
+
+.form-control-dark {
+  color: #fff;
+  background-color: rgba(255, 255, 255, .1);
+  border-color: rgba(255, 255, 255, .1);
+}
+
+.form-control-dark:focus {
+  border-color: transparent;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .25);
+}
 
 
+a.nav-link {background-color: #aaa;margin-right: 5px;color: #fff !important;min-width: 120px;text-align: center;}
 
-#btnNuovoProspectEmail{background-color: #6c757d;color: #fff;}
-#btnNuovoProspectLink{background-color: #6c757d;color: #fff;}
-#btnNuovoProspectPersone{background-color: #6c757d;color: #fff;}
+a.nav-link.active.stab{background-color: #6c757d}
 
-.table-sm td, .table-sm th {vertical-align: middle;}
-
-.btn{width: 100%}
-
-/*---*/
-.btnViewProjects{background-color: #6c757d;color: #fff;}
-
-button.fa.fa-clock-o {width: 50px;height: 50px;}
-
-.azienda_persona_ td:nth-child(4){text-align: right}
-
-.ticketstimesessions_modal_buttons{margin-top: 30px}
-#ticketstimesessions {height: 300px;overflow: auto;text-align: justify;}
-#ticketstimesessions hr {margin-top: 5px !important;margin-bottom: 5px !important;}
-span.difference {float: right;}
-
-/*.inizio{font-family: "courier new"}
-.fine{font-family: "courier new"}*/
-
-div#ticketstimesessions hr:nth-child(1) {display: none;}
+.table td, .table th {border-top: 0px !important;}
