@@ -1,0 +1,45 @@
+#view_filecontent .modal-dialog{
+    max-width: 800px;
+}
+#view_filecontent .modal-body{
+    height: 500px;
+    overflow: auto
+}
+#view_filecontent table{
+    width: 100%;
+}
+
+.slc{font-weight: 300;font-size: 13px}
+.key{font-weight: 300;font-size: 13px}
+
+.selectedclm{background-color: orange;color:#fff}
+.selectedkey{background-color: red;color:#fff}
+
+
+textarea {
+    width: 100%;font-size: 14px;font-family:"Courier new";height: 300px
+}
+
+h3{margin-top: 10px;font-size: 1.5rem !important}
+h4{margin-top: 5px;margin-bottom: 5px;font-size: 1.2rem !important}
+#tablecontent_generated__application_config{
+    height: 90px
+}
+#tablecontent_generated__query{
+    height: 150px
+}
+#tablecontent_generated__html{
+    height: 40px;
+}
+#tablecontent_generated__moduleconfigview{
+    height: 220px;
+}
+#tablecontent_generated__moduleconfigedit{
+    height: 220px;
+}
+textarea {
+    width: 100%;
+    font-size: 13px;
+    font-family: "Courier new";
+    height: 300px;
+}
