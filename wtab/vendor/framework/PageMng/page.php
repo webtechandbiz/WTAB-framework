@@ -106,7 +106,11 @@ class page {
         global $application_configs;
         $this->ViewModel = $this->$__action();
 
-        $_page_path = $application_configs['PRIVATE_FOLDER_MODULE'].$modulename.'/view/'.$_view_folder.'/'.$_action.'/'.$_action.'.phtml';
+//#30042021 todo: fix this section
+//        $_page_path = $application_configs['PRIVATE_FOLDER_MODULE'].$modulename.'/view/'.$_view_folder.'/'.$_action.'/'.$_action.'.phtml';
+$_container = 'index'; //# todo: fix this section
+
+        $_page_path = $application_configs['PRIVATE_FOLDER_MODULE'].$modulename.'/view/'.$_view_folder.'/'.$_container.'/'.$_action.'.phtml';
         include($application_configs['PRIVATE_FOLDER_MODULE'].'Application/view/layout/layout.phtml');
     }
     public function __construct($application_config) {
@@ -116,4 +120,10 @@ class page {
             die('no $application_config');
         }
     }
+    public function _get_application_configs(){
+        if(isset($this->application_config)){
+            return $this->application_config;
+        }
+    }
+    
 }
