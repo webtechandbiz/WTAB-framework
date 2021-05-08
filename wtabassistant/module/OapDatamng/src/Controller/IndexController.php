@@ -169,9 +169,9 @@ class IndexController extends \page{
         ));
     }
 
-    public function getGeneratedCodeByTableAction(){    public function getGeneratedCodeByTableAction(){
+    public function getGeneratedCodeByTableAction(){
         $__db_mng = $this->_get_application_configs()['db_mng'];
-        $__getGeneratedCodeByTable = $this->_getGeneratedCodeByTable($__db_mng, $this->_get_application_configs()['db_details']['VxMO8N5kX4'], $this->_get_application_configs()['_post']['tablename']);
+        $this->_getGeneratedCodeByTable($__db_mng, $this->_get_application_configs()['db_details']['VxMO8N5kX4'], $this->_get_application_configs()['_post']['tablename']);
     }
 
     private function _getRandomCode() {
@@ -197,7 +197,7 @@ class IndexController extends \page{
                 break;
         }
     }
-    private function _getGeneratedCodeByTable($__db_mng, $dbname, $tablename){        
+    private function _getGeneratedCodeByTable($__db_mng, $dbname, $tablename){
         $_datakeys_tablename_columns = $this->_getFieldListByTable($__db_mng, $dbname, $tablename);
 
         //# get PRIMARY KEY
@@ -220,33 +220,29 @@ class IndexController extends \page{
                 $_column_name = strtolower($_fk_table['column_name']);
                 $_column_name = str_replace('_id', '', $_column_name);
                 $_selectjoin .= 'LEFT JOIN '.$_column_name.' ON '.$_column_name.'.id_'.$_column_name.' = '.$tablename.'.'.$_fk_table['column_name'].' '.PHP_EOL;
-                $tables[] = $_column_name;
+//                $tables[] = $_column_name;
                 $_foreign_keys_ary[] = $_fk_table['column_name'];
                 $_foreign_tables[] = array(
                     'table' => $_column_name, 'field' => $_fk_table['column_name'],
                 );
             }
         }
-        
+
         //# get JOINED DATA
         $_select = $_selectjoin;
         $_ = $__db_mng->getDataByQuery($_select, 'db');
         $_datakeys = $_['response_columns'];
         $_data = $_['response'];
 
-        $_datakeys_tablename_columns = $this->_getFieldListByTable($__db_mng, $dbname, $tablename);
         foreach ($_datakeys as $key => $_clm){
             $_columns[] = $key;
         }
         if($_['response'] === 'no-rows'){
             $_columns = $_datakeys_tablename_columns;
         }
-
         //# get tables and fields
-        if(isset($tables) && is_array($tables)){
-            foreach ($tables as $_table){
-                $_getFieldsByTable[] = $this->_getFieldsByTable($__db_mng, $dbname, $_table);
-            }
+        if(isset($_columns) && is_array($_columns)){
+            $_getFieldsByTable[] = $this->_getFieldsByTable($__db_mng, $dbname, $tablename);
         }else{
             die('Put some date into the table "'.$tablename.'" and try again.');
         }
@@ -490,7 +486,6 @@ class IndexController extends \page{
         $_php_edit .= $php_tab.'$post = $this->_get_application_configs()[\'_post\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
 
-//        $_php_edit .= '$_getFieldsByTable = '.var_export($_tables, true).';'.PHP_EOL; //#TODO
         $_php_edit .= '$insert_update = 1;'.PHP_EOL;
 
         foreach ($_tables as $table => $fields){
@@ -503,8 +498,6 @@ class IndexController extends \page{
             $_php_edit .= '$id = $___db_mng->saveDataOnTable(\''.$table.'\', $save, \'db\', $insert_update);'.PHP_EOL;
             $_php_edit .= $php_tab.'$save = null;'.PHP_EOL;
         }
-
-//        $_php_edit .= 'die();'.PHP_EOL;
         
         //# Now save data into tablename
         $_php_edit .= $php_tab.'$_where = $post[\'where\'];'.PHP_EOL;
