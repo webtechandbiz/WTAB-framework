@@ -11,6 +11,7 @@ $( document ).ready(function() {
             $('#tablecontent_generated__application_config').html(data.application_config);
             //# View
             $('#tablecontent_generated__foreign_tables').html(data.foreign_tables);
+            $('#tablecontent_generated__menu').html(data.menu);
             $('#tablecontent_generated__moduleconfigview').html(data.module_config_get_data);
             $('#tablecontent_generated__query').html(data.selectjoin);
             $('#tablecontent_generated__html').html(data.html_getdata);
