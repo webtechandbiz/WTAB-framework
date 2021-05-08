@@ -243,12 +243,12 @@ class IndexController extends \page{
         }
 
         //# get tables and fields
-        if(is_array($tables)){
+        if(isset($tables) && is_array($tables)){
             foreach ($tables as $_table){
                 $_getFieldsByTable[] = $this->_getFieldsByTable($__db_mng, $dbname, $_table);
             }
         }else{
-            die('Put some date into the table '.$_table);
+            die('Put some date into the table "'.$tablename).'" and try again.';
         }
 
         $_tables = array();
