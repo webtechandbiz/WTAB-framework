@@ -315,6 +315,10 @@ class IndexController extends \page{
         $_id = 'id_'.$tablename;
         $routing_view = array('module' => $_module, 'controller' => $_controller, 'action' => $_action_get);
 
+        $_menu = '<li class="nav-item active">'.PHP_EOL;
+            $_menu .= '<a class="nav-link" href="/'.$_module.'/'.$_controller.'/'.$_action_get.'">'.$_action_get.'<span class="sr-only">(current)</span></a>'.PHP_EOL;
+        $_menu .= '</li>'.PHP_EOL;
+
         //#whitelist
         $_application_config = '//#'.$tablename.PHP_EOL;
         $_application_config .= '\''.$tablename.'/index/index\' => \'no-parameters\','.PHP_EOL;
@@ -551,6 +555,8 @@ class IndexController extends \page{
             array(
                 'tabledata' => $tabledata, 
                 'selectjoin' => $_selectjoin,
+
+                'menu' => $_menu,
                 'application_config' => $_application_config,
                 
                 //# Get
