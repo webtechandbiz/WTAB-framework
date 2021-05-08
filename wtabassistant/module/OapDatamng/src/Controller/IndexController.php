@@ -197,8 +197,9 @@ class IndexController extends \page{
                 break;
         }
     }
-    private function _getGeneratedCodeByTable($__db_mng, $dbname, $tablename){
-        $tables_and_fields = $tables = array();
+    private function _getGeneratedCodeByTable($__db_mng, $dbname, $tablename){        
+        $_datakeys_tablename_columns = $this->_getFieldListByTable($__db_mng, $dbname, $tablename);
+
         //# get PRIMARY KEY
         $_primary_key = $this->_getPrimaryKeyByTable($__db_mng, $dbname, $tablename);
         
@@ -231,16 +232,23 @@ class IndexController extends \page{
         $_select = $_selectjoin;
         $_ = $__db_mng->getDataByQuery($_select, 'db');
         $_datakeys = $_['response_columns'];
-        
-        $_datakeys_tablename_columns = $this->_getFieldListByTable($__db_mng, $dbname, $tablename);
         $_data = $_['response'];
+
+        $_datakeys_tablename_columns = $this->_getFieldListByTable($__db_mng, $dbname, $tablename);
         foreach ($_datakeys as $key => $_clm){
             $_columns[] = $key;
         }
+        if($_['response'] === 'no-rows'){
+            $_columns = $_datakeys_tablename_columns;
+        }
 
         //# get tables and fields
-        foreach ($tables as $_table){
-            $_getFieldsByTable[] = $this->_getFieldsByTable($__db_mng, $dbname, $_table);
+        if(is_array($tables)){
+            foreach ($tables as $_table){
+                $_getFieldsByTable[] = $this->_getFieldsByTable($__db_mng, $dbname, $_table);
+            }
+        }else{
+            die('Put some date into the table '.$_table);
         }
 
         $_tables = array();
