@@ -169,50 +169,9 @@ class IndexController extends \page{
         ));
     }
 
-    public function getGeneratedCodeByTableAction(){
+    public function getGeneratedCodeByTableAction(){    public function getGeneratedCodeByTableAction(){
         $__db_mng = $this->_get_application_configs()['db_mng'];
         $__getGeneratedCodeByTable = $this->_getGeneratedCodeByTable($__db_mng, $this->_get_application_configs()['db_details']['VxMO8N5kX4'], $this->_get_application_configs()['_post']['tablename']);
-        //#TODO
-        die();
-        $_content = file_get_contents($_path.$this->_get_application_configs()['_post']['filename']);
-        
-        $_row_count = 0;
-        $clmposition = 0;
-
-        $_html = 'Add autoincrement? <input id="addautoincrement" type="checkbox" value="1"/>';
-        
-        $_html .= '<table>';
-        $_ = explode(PHP_EOL, $_content);
-        header("Content-Type: application/json");
-        if($_ !== ''){
-            foreach ($_ as $row){
-                $clm = explode(',', $row);
-                $_html .= '<tr>';
-                if($_row_count === 0){
-                    foreach ($clm as $clm){
-                        $_html .= '<th data-clmposition="'.$clmposition.'">';
-                            $_html .= '<span data-clm="'.$clm.'" data-clmposition="'.$clmposition.'" class="slc">select<br><select class="clmtype"><option value="1">varchar</option><option value="2">int</option></select><br><input type="text"/></span><br>';
-                            $_html .= '<span data-clm="'.$clm.'" data-clmposition="'.$clmposition.'" class="key">key</span><br>';
-                            $_html .= '<br>';
-                        $_html .= ''.$clm.'</th>';
-                        $clmposition++;
-                    }
-                }else{
-                    foreach ($clm as $clm){
-                        $_html .= '<td>'.$clm.'</td>';
-                    }
-                }
-                $_html .= '</tr>';
-
-                $_row_count++;
-            }
-            $_html .= '</table>';
-            echo json_encode(array('content' => $_html));
-        }
-        die();
-        return new \JsonModel(array(
-            'content' => $_content
-        ));
     }
 
     private function _getRandomCode() {
