@@ -314,8 +314,10 @@ class IndexController extends \page{
         $_controller = 'index';
         $_id = 'id_'.$tablename;
         $routing_view = array('module' => $_module, 'controller' => $_controller, 'action' => $_action_get);
-        
-        $_application_config = '\''.$tablename.'/index/index\' => \'no-parameters\','.PHP_EOL;
+
+        //#whitelist
+        $_application_config = '//#'.$tablename.PHP_EOL;
+        $_application_config .= '\''.$tablename.'/index/index\' => \'no-parameters\','.PHP_EOL;
         $_application_config .= '\''.$tablename.'/'.$_action_get.'/'.$_action_get.'\' => \'no-parameters\','.PHP_EOL;
         $_application_config .= '\''.$tablename.'/'.$_action_set.'/'.$_action_set.'\' => \'no-parameters\','.PHP_EOL;
 
