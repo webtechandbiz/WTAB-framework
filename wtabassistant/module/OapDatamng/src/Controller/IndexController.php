@@ -247,7 +247,6 @@ class IndexController extends \page{
             die('Put some date into the table "'.$tablename.'" and try again.');
         }
 
-        $_tables = array();
         $_pretable = '';
         if(isset($_getFieldsByTable) && is_array($_getFieldsByTable)){
             foreach ($_getFieldsByTable as $_field){
@@ -509,7 +508,6 @@ class IndexController extends \page{
         $_php_edit .= $php_tab.'$_where = $post[\'where\'];'.PHP_EOL;
         $table = $tablename;
 
-        $_tables = array();
         $__getFieldsByPrimaryTable = $this->_getFieldsByTable($__db_mng, $dbname, $tablename);
 
         $_pretable = '';
