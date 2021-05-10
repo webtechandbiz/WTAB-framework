@@ -316,6 +316,7 @@ class DbMng {
         return $db;
     }
 
+    //#TODO improve the formal check
     public function formalCheck($type, $value){
         switch ($type) {
             case 'varchar':
