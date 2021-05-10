@@ -21,7 +21,7 @@ $( document ).ready(function() {
             if(data === 'expired-token'){
                 location.reload();
             }
-            if(data === $('#username').val()){
+            if(data.checklogin.response === $('#username').val()){
                 location.href = APPLICATION_HOME;
             }
         })
