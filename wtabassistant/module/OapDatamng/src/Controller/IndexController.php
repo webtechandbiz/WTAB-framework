@@ -312,7 +312,7 @@ class IndexController extends \page{
         $routing_view = array('module' => $_module, 'controller' => $_controller, 'action' => $_action_get);
 
         $_menu = '<li class="nav-item active">'.PHP_EOL;
-            $_menu .= '<a class="nav-link" href="/'.$_module.'/'.$_controller.'/'.$_action_get.'">'.$_action_get.'<span class="sr-only">(current)</span></a>'.PHP_EOL;
+            $_menu .= $php_tab.'<a class="nav-link" href="<?php echo $application_configs[\'APPLICATION_URL\']?>'.$_module.'/'.$_controller.'/index">'.$_action_get.'<span class="sr-only">(current)</span></a>'.PHP_EOL;
         $_menu .= '</li>'.PHP_EOL;
 
         //#whitelist
