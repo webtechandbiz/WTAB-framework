@@ -443,8 +443,8 @@ class IndexController extends \page{
                                                 $_html_edit .= $php_tab.'</select>'.PHP_EOL;
                                                 $_edit_button_needed = true;
                                             } else{
-                                                $_html_edit .= $php_tab.'<div id="dv_'.$clm.'"></div>'.PHP_EOL;
-                                                $_html_edit .= $php_tab.'<input FK1 type="hidden" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
+                                                $_html_edit .= $php_tab.$php_tab.'<div id="dv_'.$clm.'"></div>'.PHP_EOL;
+                                                $_html_edit .= $php_tab.$php_tab.'<input FK1 type="hidden" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
                                             }
                                         }else{
                                             if(strpos($clm, '_id') !== false){
@@ -462,7 +462,7 @@ class IndexController extends \page{
                                                 $_html_edit .= $php_tab.'</select>'.PHP_EOL;
                                                 $_edit_button_needed = true;
                                             } else{
-                                                $_html_edit .= $php_tab.'<input FK2 type="text" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
+                                                $_html_edit .= $php_tab.$php_tab.'<input FK2 type="text" id="'.$clm.'" placeholder="'.$clm.'"/>'.PHP_EOL;
                                             }
                                         }
                                     $_html_edit .= $php_tab.'</div>'.PHP_EOL;
@@ -474,12 +474,12 @@ class IndexController extends \page{
                                             $_html_edit .= $php_tab.$php_tab.'&nbsp;'.PHP_EOL;
                                         }
                                     $_html_edit .= $php_tab.'</div>'.PHP_EOL;
-                                $_html_edit .= '</div>';
+                                $_html_edit .= '</div>'.PHP_EOL;
                             }
                         $_html_edit .= '</form>'.PHP_EOL;
                     $_html_edit .= '</div>'.PHP_EOL;
                     $_html_edit .= '<div class="modal-footer">'.PHP_EOL;
-                        $_html_edit .= '<button id="confirm_edit_'.$tablename.'" type="button" class="btn btn-primary">Confirm</button>'.PHP_EOL;
+                        $_html_edit .= $php_tab.'<button id="confirm_edit_'.$tablename.'" type="button" class="btn btn-primary">Confirm</button>'.PHP_EOL;
                     $_html_edit .= '</div>'.PHP_EOL;
                 $_html_edit .= '</div>'.PHP_EOL;
             $_html_edit .= '</div>'.PHP_EOL;
