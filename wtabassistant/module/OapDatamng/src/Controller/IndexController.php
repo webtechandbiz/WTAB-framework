@@ -491,8 +491,8 @@ class IndexController extends \page{
         $_php_edit .= $php_tab.'$post = $this->_get_application_configs()[\'_post\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
 
+        /*
         $_php_edit .= '$insert_update = 1;'.PHP_EOL;
-
         foreach ($_tables as $table => $fields){
             foreach ($fields as $field){
                 if(isset($field['clm']) && $field['clm'] != '' && $field['extra'] != 'auto_increment'){
@@ -503,7 +503,8 @@ class IndexController extends \page{
             $_php_edit .= '$id = $___db_mng->saveDataOnTable(\''.$table.'\', $save, \'db\', $insert_update);'.PHP_EOL;
             $_php_edit .= $php_tab.'$save = null;'.PHP_EOL;
         }
-        
+        */
+
         //# Now save data into tablename
         $_php_edit .= $php_tab.'$_where = $post[\'where\'];'.PHP_EOL;
         $table = $tablename;
