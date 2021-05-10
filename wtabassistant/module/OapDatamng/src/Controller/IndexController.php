@@ -247,7 +247,6 @@ class IndexController extends \page{
             die('Put some date into the table "'.$tablename.'" and try again.');
         }
 
-        $_pretable = '';
         if(isset($_getFieldsByTable) && is_array($_getFieldsByTable)){
             foreach ($_getFieldsByTable as $_field){
                 $_fields = array();
@@ -257,8 +256,6 @@ class IndexController extends \page{
                         'clm' => $field['COLUMN_NAME'], 'type' => $field['COLUMN_TYPE']
                         , 'extra' => $field['EXTRA']);
                     $_tables[$field['TABLE_NAME']] = $_fields;
-
-                    $_pretable = $field['TABLE_NAME'];
                 }
             }
         }
@@ -491,41 +488,51 @@ class IndexController extends \page{
         $_php_edit .= $php_tab.'$post = $this->_get_application_configs()[\'_post\'];'.PHP_EOL;
         $_php_edit .= $php_tab.'$_post = $post[\'values\'];'.PHP_EOL.PHP_EOL;
 
-        /*
-        $_php_edit .= '$insert_update = 1;'.PHP_EOL;
-        foreach ($_tables as $table => $fields){
-            foreach ($fields as $field){
-                if(isset($field['clm']) && $field['clm'] != '' && $field['extra'] != 'auto_increment'){
-                    $_php_edit .= $php_tab.
-                        '$save[] = array(\'field\' => \''.$field['clm'].'\', \'typed_value\' => $_post[\''.$field['clm'].'\']);'.PHP_EOL;
-                }
-            }
-            $_php_edit .= '$id = $___db_mng->saveDataOnTable(\''.$table.'\', $save, \'db\', $insert_update);'.PHP_EOL;
-            $_php_edit .= $php_tab.'$save = null;'.PHP_EOL;
-        }
-        */
-
         //# Now save data into tablename
         $_php_edit .= $php_tab.'$_where = $post[\'where\'];'.PHP_EOL;
         $table = $tablename;
 
         $__getFieldsByPrimaryTable = $this->_getFieldsByTable($__db_mng, $dbname, $tablename);
 
-        $_pretable = '';
         $_fields = array();
 
         foreach ($__getFieldsByPrimaryTable as $field){
             $_table = $field['TABLE_NAME'];
+            $_column_type = $field['COLUMN_TYPE'];
+            $_column_type = str_replace(')', '', $_column_type);
+            $_column_type_ary = explode('(', $_column_type);
+            $_column_type = $_column_type_ary[0];
+            $_column_length = $_column_type_ary[1];
             $_fields[] = array(
-                'clm' => $field['COLUMN_NAME'], 'type' => $field['COLUMN_TYPE']
-                , 'extra' => $field['EXTRA']);
+                'clm' => $field['COLUMN_NAME'], 'type' => $_column_type, 'length' => $_column_length, 
+                'COLUMN_DEFAULT' => $field['COLUMN_DEFAULT'],
+                'IS_NULLABLE' => $field['IS_NULLABLE'],
+                'extra' => $field['EXTRA']
+            );
             $_tables[$field['TABLE_NAME']] = $_fields;
-
-            $_pretable = $field['TABLE_NAME'];
         }
 
 
         foreach ($_tables as $table => $fields){
+            //# Mandatory check
+            foreach ($fields as $field){
+                if(isset($field['clm']) && $field['clm'] != '' && $field['extra'] != 'auto_increment'){
+                    $clm = $field['clm'];
+                    if($field['IS_NULLABLE'] === 'NO'){
+                        $is_mandatory = true;
+                        
+                        $_php_edit .= $php_tab.'if('.'$_post[\''.$clm.'\'] == \'\'){'.PHP_EOL;
+                            $_php_edit .= $php_tab.$php_tab.'return new \JsonModel(array('.PHP_EOL;
+                            $_php_edit .= $php_tab.$php_tab.$php_tab.'\'mnderr\' => \''.$clm.'\''.PHP_EOL;
+                            $_php_edit .= $php_tab.$php_tab.'));'.PHP_EOL;
+                        $_php_edit .= $php_tab.'}'.PHP_EOL;
+                    }else{
+                        $is_mandatory = false;
+                    }
+                }
+            }
+            
+            //# Save data
             foreach ($fields as $field){
                 if(isset($field['clm']) && $field['clm'] != '' && $field['extra'] != 'auto_increment'){
                     $clm = $field['clm'];
