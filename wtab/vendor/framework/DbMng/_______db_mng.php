@@ -315,4 +315,26 @@ class DbMng {
         $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $db;
     }
+
+    public function formalCheck($type, $value){
+        switch ($type) {
+            case 'varchar':
+                if(is_string($value)){
+                    return true;
+                }else{
+                    return false;
+                }
+                break;
+            case 'int':
+                if(is_numeric($value)){
+                    return true;
+                }else{
+                    return false;
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
 }
