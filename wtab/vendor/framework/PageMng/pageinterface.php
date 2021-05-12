@@ -21,7 +21,7 @@ class pageinterface {
                     $_html .= '<td>&nbsp;</td>'.PHP_EOL;
                 }
             }
-            $_html .= '<td><div data-id="'.$row[$id].'" class="'.$_action.'">[Edit]</div></td>'.PHP_EOL; //# todo controller
+            $_html .= '<td><div data-id="'.$row[$id].'" class="edit '.$_action.'">[Edit]</div></td>'.PHP_EOL; //# todo controller
             $_html .= '</tr>'.PHP_EOL;
         }
         $_html .= '</table>'.PHP_EOL;
