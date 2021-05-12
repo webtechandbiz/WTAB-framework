@@ -502,7 +502,11 @@ class IndexController extends \page{
             $_column_type = str_replace(')', '', $_column_type);
             $_column_type_ary = explode('(', $_column_type);
             $_column_type = $_column_type_ary[0];
-            $_column_length = $_column_type_ary[1];
+            if(isset($_column_type_ary[1])){
+                $_column_length = $_column_type_ary[1];
+            }else{
+                $_column_length = 1000; //#TODO
+            }
             $_fields[] = array(
                 'clm' => $field['COLUMN_NAME'], 'type' => $_column_type, 'length' => $_column_length, 
                 'COLUMN_DEFAULT' => $field['COLUMN_DEFAULT'],
