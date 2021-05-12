@@ -79,3 +79,6 @@ a.nav-link {background-color: #aaa;margin-right: 5px;color: #fff !important;min-
 a.nav-link.active.stab{background-color: #6c757d}
 
 .table td, .table th {border-top: 0px !important;}
+
+
+th, td{padding:5px}
