@@ -609,12 +609,14 @@ class IndexController extends \page{
 
         $_ .= 'function fnc__'.$_action_edit.'(){'.PHP_EOL;
             $_ .= $php_tab.'console.log(\''.$anchor_view.'\');'.PHP_EOL;
+            $_ .= $php_tab.'$(\'#caricamento\').show();'.PHP_EOL;
             $_ .= $php_tab.'var where = $(\'#'.$_primary_key.'\').val();'.PHP_EOL;
 
             $_ .= $php_tab.'$.post( APPLICATION_URL + "'.$routing['module'].'/'.$routing['controller'].'/'.$routing['action'].'", { where: where })'.PHP_EOL;
             $_ .= $php_tab.'.done(function(data) {'.PHP_EOL;
                 $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
                 $_ .= $php_tab.$php_tab.'$(\'#span_'.$tablename.'\').replaceWith(data.table);'.PHP_EOL;
+                $_ .= $php_tab.'$(\'#caricamento\').hide();'.PHP_EOL;
             $_ .= $php_tab.'})'.PHP_EOL;
             $_ .= $php_tab.'.fail(function(data) {'.PHP_EOL;
                 $_ .= $php_tab.$php_tab.'console.log( "error" );'.PHP_EOL;
@@ -638,6 +640,8 @@ class IndexController extends \page{
         $_ = '';
         $_ .= '$(\'body\').on(\'click\', \'#confirm_edit_'.$tablename.'\', function(e) {'.PHP_EOL;
             $_ .= $php_tab.'console.log(\'#confirm_edit_'.$tablename.'\');'.PHP_EOL;
+            $_ .= $php_tab.'$(\'#caricamento\').show();'.PHP_EOL;
+            $_ .= $php_tab.'$(\'.modal\').modal(\'hide\');'.PHP_EOL;
             $_ .= $php_tab.'var values = {};'.PHP_EOL;
             $_ .= $php_tab.'var where = $(\'#'.$_primary_key.'\').val();'.PHP_EOL;
             
@@ -651,6 +655,7 @@ class IndexController extends \page{
             $_ .= $php_tab.'$.post( APPLICATION_URL + "'.$routing['module'].'/'.$routing['controller'].'/'.$routing['action'].'", { values: values, where: where })'.PHP_EOL;
             $_ .= $php_tab.'.done(function(data) {'.PHP_EOL;
                 $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'location.reload();'.PHP_EOL;
             $_ .= $php_tab.'})'.PHP_EOL;
             $_ .= $php_tab.'.fail(function(data) {'.PHP_EOL;
                 $_ .= $php_tab.$php_tab.'console.log( "error" );'.PHP_EOL;
