@@ -37,3 +37,4 @@ button{
 }
 
 .edit{cursor: pointer}
+.tablecontent{width: 100%;overflow: auto}
