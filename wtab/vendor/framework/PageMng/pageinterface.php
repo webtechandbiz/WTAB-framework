@@ -5,6 +5,7 @@ class pageinterface {
 
     public function table($id, $data, $columns, $_module, $_controller, $_action){
         $php_tab = '    ';
+        $tablename = strtolower(str_replace('edit', '', $_action));
         $_html = '<table>'.PHP_EOL;
         $_html .= '<tr>'.PHP_EOL;
         foreach ($columns as $field_name => $clm){
@@ -16,7 +17,11 @@ class pageinterface {
             $_html .= '<tr>'.PHP_EOL;
             foreach ($columns as $field_name => $clm){
                 if(isset($row[$clm])){
-                    $_html .= '<td>'.$row[$clm].'</td>'.PHP_EOL;
+                    if(strpos($clm, '_id') !== false || strpos($clm, 'id_') !== false){ //# TODO improve
+                        $_html .= '<td>'.$row[$clm].'</td>'.PHP_EOL;
+                    }else{
+                        $_html .= '<td class="open_'.$clm.'" data-id="'.$row['id_'.$tablename].'">'.$row[$clm].'</td>'.PHP_EOL;
+                    }
                 }else{
                     $_html .= '<td>&nbsp;</td>'.PHP_EOL;
                 }
