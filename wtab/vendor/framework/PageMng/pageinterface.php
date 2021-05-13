@@ -9,7 +9,7 @@ class pageinterface {
         $_html = '<table>'.PHP_EOL;
         $_html .= '<tr>'.PHP_EOL;
         foreach ($columns as $field_name => $clm){
-            $_html .= '<th data-fn="'.$field_name.'">'.$field_name.'</th>'.PHP_EOL;
+            $_html .= '<th data-fn="'.$clm.'">'.$field_name.'</th>'.PHP_EOL;
         }
         $_html .= '</tr>'.PHP_EOL;
 
