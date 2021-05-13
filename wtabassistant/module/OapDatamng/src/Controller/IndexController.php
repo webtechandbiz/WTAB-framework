@@ -347,6 +347,8 @@ class IndexController extends \page{
             $_html_getdata .= '<span id="span_'.$tablename.'"></span>';
             $_data[] = array('html_getdata' => $_html_getdata);
         }
+        
+        $_html_getdata .= '<br><br><button id="insertproposal">Inserisci</button>';
 
         //# PHP get data
         $_php_getdata = 'public function '.$_action_get.'Action(){'.PHP_EOL;
@@ -355,22 +357,35 @@ class IndexController extends \page{
         $_php_getdata .= $php_tab.'$_controller = \'index\';'.PHP_EOL;
         $_php_getdata .= $php_tab.'$_action_edit = \''.$_action_edit.'\';'.PHP_EOL;
         
-        $_php_getdata .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL;
-        $_php_getdata .= $php_tab.'$get = \''.$_selectjoin.'\';'.PHP_EOL;
+        $_php_getdata .= $php_tab.'$___db_mng = $this->_get_application_configs()[\'db_mng\'];'.PHP_EOL.PHP_EOL;
+
+        $_php_getdata .= $php_tab.'$post = $this->_get_application_configs()[\'_post\'];'.PHP_EOL;
+        $_php_getdata .= $php_tab.'if(isset($post[\'where\']) && intval($post[\'where\']) > 0){'.PHP_EOL;
+        $_php_getdata .= $php_tab.$php_tab.'$_where = $post[\'where\'];'.PHP_EOL;
+            $_php_getdata .= $php_tab.$php_tab.'$get = \''.$_selectjoin.' WHERE id_'.$tablename.'="\'.$_where.\'" \';'.PHP_EOL; //TODO improve
+        $_php_getdata .= $php_tab.'}else{'.PHP_EOL;
+            $_php_getdata .= $php_tab.$php_tab.'$get = \''.$_selectjoin.'\';'.PHP_EOL;
+        $_php_getdata .= $php_tab.'}'.PHP_EOL;
+
         $_php_getdata .= $php_tab.'$result = $___db_mng->getDataByQuery($get, \'db\')[\'response\'];'.PHP_EOL;
         
         $_php_getdata .= $php_tab.'$_columns = array('.PHP_EOL;
-            $_php_getdata .= $php_tab.$_columns_ary_str.PHP_EOL;
+            $_php_getdata .= $php_tab.$php_tab.$_columns_ary_str.PHP_EOL;
         $_php_getdata .= $php_tab.');'.PHP_EOL;
 
         $_php_getdata .= $php_tab.'if($result !== \'no-rows\' && isset($result[0])){'.PHP_EOL;
             $_php_getdata .= $php_tab.$php_tab.'$table = $_pageinterface->table(\''.$_id.'\', $result, $_columns, $_module, $_controller, $_action_edit);'.PHP_EOL;
-        $_php_getdata .= $php_tab.'}'.PHP_EOL;
+            $_php_getdata .= $php_tab.$php_tab.'$data = $result[0];'.PHP_EOL;
+        $_php_getdata .= $php_tab.'}else{'.PHP_EOL;
+            $_php_getdata .= $php_tab.$php_tab.'$data = $result;'.PHP_EOL;
+        $_php_getdata .= $php_tab.'}'.PHP_EOL.PHP_EOL;
+
         $_php_getdata .= $php_tab.'header("Content-Type: application/json");'.PHP_EOL;
         $_php_getdata .= $php_tab.'echo json_encode('.PHP_EOL;
-            $_php_getdata .= $php_tab.'array(';
-                $_php_getdata .= $php_tab.'\'table\' => $table';
-            $_php_getdata .= $php_tab.')';
+            $_php_getdata .= $php_tab.$php_tab.'array('.PHP_EOL;
+                $_php_getdata .= $php_tab.$php_tab.$php_tab.'\'table\' => $table,'.PHP_EOL;
+                $_php_getdata .= $php_tab.$php_tab.$php_tab.'\'data\' => $data'.PHP_EOL;
+            $_php_getdata .= $php_tab.$php_tab.')'.PHP_EOL;
         $_php_getdata .= $php_tab.');'.PHP_EOL;
         
         $_php_getdata .= $php_tab.'die();'.PHP_EOL;
@@ -535,7 +550,21 @@ class IndexController extends \page{
                     }
                 }
             }
-            
+
+            //# Formal check
+            foreach ($fields as $field){ //# TODO: must be improved
+                if(isset($field['clm']) && $field['clm'] != '' && $field['extra'] != 'auto_increment'){
+                    $clm = $field['clm'];
+//                    length //#TODO length check
+                    $_php_edit .= $php_tab.'$_fc = $___db_mng->formalCheck(\''.$field['type'].'\', $_post[\''.$clm.'\']);'.PHP_EOL;
+                    $_php_edit .= $php_tab.'if(!$_fc){'.PHP_EOL;
+                    $_php_edit .= $php_tab.$php_tab.'return new \JsonModel(array('.PHP_EOL;
+                    $_php_edit .= $php_tab.$php_tab.$php_tab.'\'mnderr\' => \''.$clm.'\''.PHP_EOL;
+                    $_php_edit .= $php_tab.$php_tab.'));'.PHP_EOL;
+                    $_php_edit .= $php_tab.'}'.PHP_EOL;
+                }
+            }
+
             //# Save data
             foreach ($fields as $field){
                 if(isset($field['clm']) && $field['clm'] != '' && $field['extra'] != 'auto_increment'){
@@ -543,6 +572,7 @@ class IndexController extends \page{
                     $_php_edit .= $php_tab.'$save[] = array(\'field\' => \''.$clm.'\', \'typed_value\' => $_post[\''.$clm.'\']);'.PHP_EOL;
                 }
             }
+
         }
 
 
@@ -559,7 +589,41 @@ class IndexController extends \page{
 
         $_php_edit .= '}'.PHP_EOL;
 
+        $_html_HTMLviewfield = $_html_JSviewfield = '';
+        if(isset($_foreign_tables) && is_array($_foreign_tables)){
+            foreach ($_foreign_tables as $ft){
+                $__getFieldsByPrimaryTable = $this->_getFieldsByTable($__db_mng, $dbname, $ft['table']);
 
+                foreach ($__getFieldsByPrimaryTable as $field){
+                    $_table = $field['TABLE_NAME'];
+                    $_column_type = $field['COLUMN_TYPE'];
+                    $_column_type = str_replace(')', '', $_column_type);
+                    $_column_type_ary = explode('(', $_column_type);
+                    $_column_type = $_column_type_ary[0];
+                    if(isset($_column_type_ary[1])){
+                        $_column_length = $_column_type_ary[1];
+                    }else{
+                        $_column_length = 1000; //#TODO
+                    }
+                    $_fields_ft[] = array(
+                        'clm' => $field['COLUMN_NAME'], 'type' => $_column_type, 'length' => $_column_length, 
+                        'COLUMN_DEFAULT' => $field['COLUMN_DEFAULT'],
+                        'IS_NULLABLE' => $field['IS_NULLABLE'],
+                        'extra' => $field['EXTRA']
+                    );
+                    $_tables[$field['TABLE_NAME']] = $_fields_ft;
+                }
+
+                //# HTML View field
+                $_html_HTMLviewfield .= $this->_getHTMLViewField($__db_mng, $php_tab, $dbname, $ft['table'], $_fields_ft);
+
+                //# HTML View field
+                $_html_JSviewfield .= $this->_getJSViewField($ft['table'], $routing_view, $_primary_key, $_fields_ft);
+
+                $_fields_ft = array();
+            }
+        }
+        
         header("Content-Type: application/json");
         echo json_encode(
             array(
@@ -574,6 +638,8 @@ class IndexController extends \page{
                 'js_getdata' => $_jsgetdata,
                 'html_getdata' => $_html_getdata,
                 'php_getdata' => $_php_getdata,
+                'html_HTMLviewfield' => $_html_HTMLviewfield,
+                'html_JSviewfield' => $_html_JSviewfield,
 
                 //# Edit
                 'module_config_set_data' => $_module_config_setdata,
@@ -631,10 +697,11 @@ class IndexController extends \page{
             $_ .= $php_tab.'return false;'.PHP_EOL;
         $_ .= '}'.PHP_EOL;
 
-        $_ .= '$(\'body\').on(\'click\', \'.editslc\', function(e) {'.PHP_EOL;
-            $_ .= $php_tab.'console.log($(this).data(\'edit\'));'.PHP_EOL;
-            $_ .= $php_tab.'window.open(APPLICATION_URL + $(this).data(\'edit\') + "/'.$routing['controller'].'", \'_blank\');'.PHP_EOL; //#TODO
-        $_ .= '});'.PHP_EOL;
+//#TODO improve
+//        $_ .= '$(\'body\').on(\'click\', \'.editslc\', function(e) {'.PHP_EOL;
+//            $_ .= $php_tab.'console.log($(this).data(\'edit\'));'.PHP_EOL;
+//            $_ .= $php_tab.'window.open(APPLICATION_URL + $(this).data(\'edit\') + "/'.$routing['controller'].'", \'_blank\');'.PHP_EOL; //#TODO
+//        $_ .= '});'.PHP_EOL;
 
         return $_;
     }
@@ -644,8 +711,10 @@ class IndexController extends \page{
         $_ = '';
         $_ .= '$(\'body\').on(\'click\', \'#confirm_edit_'.$tablename.'\', function(e) {'.PHP_EOL;
             $_ .= $php_tab.'console.log(\'#confirm_edit_'.$tablename.'\');'.PHP_EOL;
+
             $_ .= $php_tab.'$(\'#caricamento\').show();'.PHP_EOL;
             $_ .= $php_tab.'$(\'.modal\').modal(\'hide\');'.PHP_EOL;
+
             $_ .= $php_tab.'var values = {};'.PHP_EOL;
             $_ .= $php_tab.'var where = $(\'#'.$_primary_key.'\').val();'.PHP_EOL;
             
@@ -666,7 +735,15 @@ class IndexController extends \page{
                 $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
             $_ .= $php_tab.'});'.PHP_EOL;
             $_ .= $php_tab.'return false;'.PHP_EOL;
+        $_ .= '});'.PHP_EOL.PHP_EOL;
+
+        $_ .= '$(\'body\').on(\'click\', \'#insert'.$tablename.'\', function(e) {'.PHP_EOL;
+            $_ .= $php_tab.'console.log(\'#insert'.$tablename.'\');'.PHP_EOL;
+            $_ .= $php_tab.'$(\'#id_'.$tablename.'\').val($(this).data(\'id\'));'.PHP_EOL;
+            $_ .= $php_tab.'$(\'#mdl_edit_'.$tablename.'\').modal(\'show\');'.PHP_EOL;
+            $_ .= $php_tab.'return false;'.PHP_EOL;
         $_ .= '});'.PHP_EOL;
+
         return $_;
     }
     
@@ -785,4 +862,73 @@ class IndexController extends \page{
             return false;
         }
     }
+    
+    private function _getHTMLViewField($__db_mng, $php_tab, $dbname, $tablename, $_datakeys_tablename_columns){
+        $_html_viewfield = '';
+        $_html_viewfield .= '<div class="modal fade" id="mdl_view_'.$tablename.'" role="dialog">'.PHP_EOL;
+            $_html_viewfield .= '<div class="modal-dialog">'.PHP_EOL;
+                $_html_viewfield .= '<div class="modal-content">'.PHP_EOL;
+                    $_html_viewfield .= '<div class="modal-body">'.PHP_EOL;
+                        $_html_viewfield .= '<form id="frm_'.$tablename.'">'.PHP_EOL;
+                            foreach ($_datakeys_tablename_columns as $_clm){
+                                $clm = $_clm['clm'];
+                                $_html_viewfield .= '<div class="row">'.PHP_EOL;
+                                    $_html_viewfield .= $php_tab.'<div class="col-md-4">'.PHP_EOL;
+                                        $_html_viewfield .= $php_tab.$php_tab.$clm.PHP_EOL;
+                                    $_html_viewfield .= $php_tab.'</div>'.PHP_EOL;
+                                    $_html_viewfield .= $php_tab.'<div class="col-md-8">'.PHP_EOL;
+                                        $_key = $this->_isKeyByColumn($__db_mng, $dbname, $clm);
+                                        $_edit_button_needed = false;
+                                        $_html_viewfield .= $php_tab.$php_tab.'<span id="'.$clm.'">'.$clm.'</span>'.PHP_EOL;
+                                    $_html_viewfield .= $php_tab.'</div>'.PHP_EOL;
+                                $_html_viewfield .= '</div>'.PHP_EOL;
+                            }
+                        $_html_viewfield .= '</form>'.PHP_EOL;
+                    $_html_viewfield .= '</div>'.PHP_EOL;
+                $_html_viewfield .= '</div>'.PHP_EOL;
+            $_html_viewfield .= '</div>'.PHP_EOL;
+        $_html_viewfield .= '</div>'.PHP_EOL;
+        $_html_viewfield .= PHP_EOL.PHP_EOL;
+        
+        return $_html_viewfield;
+    }
+    
+    private function _getJSViewField($tablename, $routing, $_primary_key, $fields){
+        $routing['module'] = $tablename; //#TODO improve
+        $routing['controller'] = 'index'; //#TODO improve
+        $routing['action'] = 'get'.ucwords($tablename); //#TODO improve
+
+        $php_tab = "    ";
+        $_ = ''.PHP_EOL;
+        $_ .= '$(\'body\').on(\'click\', \'.open_'.$tablename.'\', function(e) {'.PHP_EOL;
+            $_ .= $php_tab.'console.log(\'.open_'.$tablename.'\');'.PHP_EOL;
+
+            $_ .= $php_tab.'$(\'#caricamento\').show();'.PHP_EOL;
+            $_ .= $php_tab.'$(\'.modal\').modal(\'hide\');'.PHP_EOL;
+            $_ .= $php_tab.'var values = {};'.PHP_EOL;
+            $_ .= $php_tab.'var where = $(this).data(\'id\');'.PHP_EOL;
+
+            $_ .= $php_tab.'$.post( APPLICATION_URL + "'.$routing['module'].'/'.$routing['controller'].'/'.$routing['action'].'", { values: values, where: where })'.PHP_EOL;
+            $_ .= $php_tab.'.done(function(data) {'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'$(\'#caricamento\').hide();'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'data = data.data;'.PHP_EOL;
+
+                foreach ($fields as $fieldname => $_fieldvalue){
+                    $fieldvalue  = $_fieldvalue['clm'];
+                    $_ .= $php_tab.$php_tab.'$(\'#'.$fieldvalue.'\').html(data.'.$fieldvalue.');'.PHP_EOL;
+                }
+
+                $_ .= $php_tab.$php_tab.'$(\'#mdl_view_'.$tablename.'\').modal(\'show\');'.PHP_EOL;
+
+            $_ .= $php_tab.'})'.PHP_EOL;
+            $_ .= $php_tab.'.fail(function(data) {'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log( "error" );'.PHP_EOL;
+                $_ .= $php_tab.$php_tab.'console.log(data);'.PHP_EOL;
+            $_ .= $php_tab.'});'.PHP_EOL;
+            $_ .= $php_tab.'return false;'.PHP_EOL;
+        $_ .= '});'.PHP_EOL;
+        return $_;
+    }
+    
 }
