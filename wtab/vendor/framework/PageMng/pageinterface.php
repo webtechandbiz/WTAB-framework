@@ -20,7 +20,7 @@ class pageinterface {
                     if(strpos($clm, '_id') !== false || strpos($clm, 'id_') !== false){ //# TODO improve
                         $_html .= '<td>'.$row[$clm].'</td>'.PHP_EOL;
                     }else{
-                        $_html .= '<td class="open_'.$clm.'" data-id="'.$row['id_'.$tablename].'">'.$row[$clm].'</td>'.PHP_EOL;
+                        $_html .= '<td class="open_'.$clm.' open_details" data-id="'.$row['id_'.$tablename].'">'.$row[$clm].'</td>'.PHP_EOL;
                     }
                 }else{
                     $_html .= '<td>&nbsp;</td>'.PHP_EOL;
