@@ -348,7 +348,7 @@ class IndexController extends \page{
             $_data[] = array('html_getdata' => $_html_getdata);
         }
         
-        $_html_getdata .= '<br><br><button id="insertproposal">Inserisci</button>';
+        $_html_getdata .= '<br><br><button id="insert'.$tablename.'">Inserisci</button>';
 
         //# PHP get data
         $_php_getdata = 'public function '.$_action_get.'Action(){'.PHP_EOL;
