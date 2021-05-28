@@ -49,6 +49,9 @@ class User {
     }
     
     public function getLoggedUserOrFalse($session){
+        if(!unserialize($session['userbean'.$this->application_configs['SESSION_PREFIX']])){
+            return $session['userbean'.$this->application_configs['SESSION_PREFIX']];
+        }
         if(isset($session['userbean'.$this->application_configs['SESSION_PREFIX']]) && null !== $session['userbean'.$this->application_configs['SESSION_PREFIX']] && null !== unserialize($session['userbean'.$this->application_configs['SESSION_PREFIX']])->getEmailAndUser() && $session['userbean'.$this->application_configs['SESSION_PREFIX']] !== ''){
             return $session['userbean'.$this->application_configs['SESSION_PREFIX']];
         }else{
